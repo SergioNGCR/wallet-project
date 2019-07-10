@@ -8,30 +8,41 @@ version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
 
+def grpcVersion = '1.22.0'
+def protobufVersion = '3.7.1'
+def protocVersion = protobufVersion
+
 repositories {
-    mavenCentral()
+    maven { // The google mirror is less flaky than mavenCentral()
+        url "https://maven-central.storage-download.googleapis.com/repos/central/data/" }
+    mavenLocal()
 }
 
 dependencies {
-    implementation 'io.grpc:grpc-netty-shaded:1.22.0'
-    implementation 'io.grpc:grpc-protobuf:1.22.0'
-    implementation 'io.grpc:grpc-stub:1.22.0'
+    implementation "io.grpc:grpc-protobuf:${grpcVersion}"
+    implementation "io.grpc:grpc-stub:${grpcVersion}"
 
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    runtimeOnly "io.grpc:grpc-netty-shaded:${grpcVersion}"
+
+    testImplementation "junit:junit:4.12"
 }
 
 protobuf {
-    protoc {
-        artifact = "com.google.protobuf:protoc:3.7.1"
-    }
+    protoc { artifact = "com.google.protobuf:protoc:${protocVersion}" }
     plugins {
-        grpc {
-            artifact = 'io.grpc:protoc-gen-grpc-java:1.22.0'
-        }
+        grpc { artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}" }
     }
     generateProtoTasks {
-        all()*.plugins {
-            grpc {}
+        all()*.plugins { grpc {} }
+    }
+}
+
+// Inform IDEs like IntelliJ IDEA, Eclipse or NetBeans about the generated code.
+sourceSets {
+    main {
+        java {
+            srcDirs 'build/generated/source/proto/main/grpc'
+            srcDirs 'build/generated/source/proto/main/java'
         }
     }
 }
