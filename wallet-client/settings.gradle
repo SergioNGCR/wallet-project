@@ -3,4 +3,4 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
-rootProject.name = 'wallet-server'
+rootProject.name = 'wallet-client'
