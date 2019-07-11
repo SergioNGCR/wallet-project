@@ -1,0 +1,24 @@
+spring:
+    # Configuration for the database connection.
+    datasource:
+        url: jdbc:mysql://localhost:33306/wallet
+        username: root
+        password: test
+        # Keep the connection alive if idle for a long time (needed in production)
+        testWhileIdle: true
+        validationQuery: SELECT 1
+    jpa:
+        # Show or not log for each sql query
+        show-sql: true
+        hibernate:
+            # Hibernate ddl auto (create, create-drop, update)
+            ddl-auto: update
+            # Naming strategy
+            naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+            # The SQL dialect makes Hibernate generate better SQL for the chosen database
+            dialect: org.hibernate.dialect.MySQL8Dialect
+    application:
+        name: wallet-server
+grpc:
+    server:
+        port: 8080
