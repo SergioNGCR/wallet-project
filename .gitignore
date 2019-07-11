@@ -1,5 +1,8 @@
 .gradle
-/build/
+build
+**/build
+**/generated
+classes
 
 # Ignore Gradle GUI config
 gradle-app.setting
@@ -13,5 +16,9 @@ gradle-app.setting
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties
 
-# IntelliJ folder
-.idea/
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+**/out
