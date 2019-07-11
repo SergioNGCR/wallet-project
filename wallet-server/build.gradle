@@ -1,12 +1,5 @@
-buildscript {
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-    }
-}
-
 plugins {
     id 'org.springframework.boot' version '2.1.6.RELEASE'
-    id 'java'
 }
 
 apply plugin: 'io.spring.dependency-management'

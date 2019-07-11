@@ -2,8 +2,8 @@ plugins {
     id 'com.google.protobuf' version '0.8.9'
 }
 
-group 'com.sergio.grpc'
-version '0.0.1-SNAPSHOT'
+group = 'com.sergio.grpc'
+version = '0.0.1-SNAPSHOT'
 
 dependencies {
     implementation "io.grpc:grpc-protobuf:${grpcVersion}"

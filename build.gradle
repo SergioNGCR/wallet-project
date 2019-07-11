@@ -1,14 +1,10 @@
+group = 'com.sergio'
+version = '0.0.1-SNAPSHOT'
 
-buildscript {
-    repositories {
-        maven { // The google mirror is less flaky than mavenCentral()
-            url "https://maven-central.storage-download.googleapis.com/repos/central/data/"
-        }
-        gradlePluginPortal()
-    }
+subprojects {
+    apply plugin: 'java'
+
     ext {
-        projectVersion = '0.0.1-SNAPSHOT'
-
         grpcVersion = '1.22.0'
         protobufVersion = '3.7.1'
         protocVersion = protobufVersion
@@ -17,17 +13,6 @@ buildscript {
         springBootVersion = '2.1.6.RELEASE'
         springBootGrpcVersion = '2.4.0.RELEASE'
     }
-}
-
-plugins {
-    id 'java'
-}
-
-group = 'com.sergio'
-version = '0.0.1-SNAPSHOT'
-
-allprojects {
-    apply plugin: 'java'
 
     compileJava {
         sourceCompatibility = JavaVersion.VERSION_1_8
