@@ -1,19 +1,24 @@
+buildscript {
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
 plugins {
     id 'org.springframework.boot' version '2.1.6.RELEASE'
     id 'java'
 }
 
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'org.springframework.boot'
 
-group = 'com.sergio'
+group = 'com.sergio.wallet.client'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '1.8'
-
-repositories {
-    mavenCentral()
-}
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
+
+    compile project(':grpc')
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
