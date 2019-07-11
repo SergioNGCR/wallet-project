@@ -6,9 +6,7 @@ subprojects {
 
     ext {
         grpcVersion = '1.22.0'
-        protobufVersion = '3.7.1'
-        protocVersion = protobufVersion
-        protobufGradlePluginVersion = '0.8.9'
+        protocVersion = '3.7.1'
 
         springBootVersion = '2.1.6.RELEASE'
         springBootGrpcVersion = '2.4.0.RELEASE'
