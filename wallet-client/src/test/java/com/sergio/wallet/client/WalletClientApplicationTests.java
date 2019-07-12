@@ -1,4 +1,4 @@
-package com.sergio;
+package com.sergio.wallet.client;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

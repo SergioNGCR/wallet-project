@@ -1,10 +1,8 @@
 plugins {
     id 'org.springframework.boot' version '2.1.6.RELEASE'
-    id 'java'
 }
 
 apply plugin: 'io.spring.dependency-management'
-apply plugin: 'org.springframework.boot'
 
 group = 'com.sergio.wallet.client'
 version = '0.0.1-SNAPSHOT'
