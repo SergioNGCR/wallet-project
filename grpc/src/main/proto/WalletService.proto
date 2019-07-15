@@ -1,0 +1,27 @@
+syntax = "proto3";
+option java_multiple_files = true;
+package org.sergio.wallet.grpc;
+
+message TransactionRequest {
+    string userId = 1;
+    int32 amount = 2;
+    string currency = 3;
+}
+
+message TransactionResponse {
+    string message = 1;
+}
+
+message BalanceRequest {
+    string userId = 1;
+}
+
+message BalanceResponse {
+    map<string, int32> balances = 1;
+}
+
+service WalletService {
+    rpc deposit(TransactionRequest) returns (TransactionResponse);
+    rpc withdraw(TransactionRequest) returns (TransactionResponse);
+    rpc getBalance(BalanceRequest) returns (BalanceResponse);
+}

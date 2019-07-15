@@ -1,5 +1,6 @@
 package com.sergio.wallet.client.Components;
 
+import com.sergio.wallet.client.service.GrpcWalletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -10,18 +11,20 @@ import com.sergio.wallet.client.service.GrpcHelloService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+
 
 @Component
 public class RunnerComponent implements CommandLineRunner {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(RunnerComponent.class);
 
-    private final GrpcHelloService helloService;
+    private final GrpcWalletService walletService;
 
     @Autowired
-    public RunnerComponent(GrpcHelloService helloService){
+    public RunnerComponent(GrpcWalletService walletService){
         super();
-        this.helloService = helloService;
+        this.walletService = walletService;
     }
 
     @Override
@@ -36,8 +39,18 @@ public class RunnerComponent implements CommandLineRunner {
 
         LOGGER.info("Sending request: firstName: " + firstName + " | lastname: " + lastName);
 
-        String greeting = helloService.sendHelloMessage(firstName, lastName);
+        String result = this.walletService.deposit(firstName, 0, "USD");
 
-        LOGGER.info("Recieved: " + greeting);
+        LOGGER.info("Recieved: " + result);
+
+
+        result = this.walletService.withdraw(firstName, 0, "USD2");
+
+        LOGGER.info("Recieved: " + result);
+
+
+        Map<String, Integer> map = this.walletService.getBalance(firstName);
+
+        LOGGER.info("Recieved: Map size " + map.size());
     }
 }
