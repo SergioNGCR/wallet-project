@@ -19,6 +19,8 @@ spring:
             dialect: org.hibernate.dialect.MySQL8Dialect
     application:
         name: wallet-server
+
 grpc:
     server:
-        port: 8080
+        port: 59090
+

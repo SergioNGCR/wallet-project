@@ -5,7 +5,7 @@ subprojects {
     apply plugin: 'java'
 
     ext {
-        grpcVersion = '1.22.0'
+        grpcVersion = '1.21.0'
         protocVersion = '3.7.1'
 
         springBootVersion = '2.1.6.RELEASE'

@@ -8,11 +8,11 @@ group = 'com.sergio.wallet.server'
 version = '0.0.1-SNAPSHOT'
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    //implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
-    compile "net.devh:grpc-spring-boot-starter:${springBootGrpcVersion}"
+    //compile "net.devh:grpc-spring-boot-starter:${springBootGrpcVersion}"
     compile "net.devh:grpc-server-spring-boot-starter:${springBootGrpcVersion}"
 
     compile project(':grpc')
