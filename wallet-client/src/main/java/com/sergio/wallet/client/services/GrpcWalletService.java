@@ -1,17 +1,17 @@
-package com.sergio.wallet.client.service;
+package com.sergio.wallet.client.services;
+
+import org.springframework.stereotype.Service;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.grpc.StatusRuntimeException;
 import net.devh.boot.grpc.client.inject.GrpcClient;
-import org.sergio.grpc.HelloRequest;
-import org.sergio.grpc.HelloResponse;
 import org.sergio.wallet.grpc.BalanceRequest;
 import org.sergio.wallet.grpc.BalanceResponse;
 import org.sergio.wallet.grpc.TransactionRequest;
 import org.sergio.wallet.grpc.TransactionResponse;
 import org.sergio.wallet.grpc.WalletServiceGrpc.WalletServiceBlockingStub;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;

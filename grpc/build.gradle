@@ -6,11 +6,13 @@ group = 'com.sergio.grpc'
 version = '0.0.1-SNAPSHOT'
 
 dependencies {
-    compile "io.grpc:grpc-netty-shaded:${grpcVersion}"
-    compile "io.grpc:grpc-protobuf:${grpcVersion}"
-    compile "io.grpc:grpc-stub:${grpcVersion}"
+    implementation "io.grpc:grpc-netty-shaded:${grpcVersion}"
+    implementation "io.grpc:grpc-protobuf:${grpcVersion}"
+    implementation "io.grpc:grpc-stub:${grpcVersion}"
 
-    testImplementation "junit:junit:4.12"
+    /*testImplementation "io.grpc:grpc-testing:${grpcVersion}"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${juniperVersion}"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${juniperVersion}"*/
 }
 
 protobuf {

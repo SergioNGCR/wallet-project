@@ -10,9 +10,9 @@ version = '0.0.1-SNAPSHOT'
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
 
-    compile "net.devh:grpc-client-spring-boot-starter:${springBootGrpcVersion}"
+    implementation "net.devh:grpc-client-spring-boot-starter:${springBootGrpcVersion}"
 
-    compile project(':grpc')
+    implementation project(':grpc')
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

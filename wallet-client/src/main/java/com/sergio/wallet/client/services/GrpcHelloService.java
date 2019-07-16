@@ -1,6 +1,7 @@
-package com.sergio.wallet.client.service;
+package com.sergio.wallet.client.services;
 
 import org.springframework.stereotype.Service;
+
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import io.grpc.StatusRuntimeException;
 

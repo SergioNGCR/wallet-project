@@ -1,10 +1,7 @@
-package com.sergio.wallet.server.service;
+package com.sergio.wallet.server.services;
 
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
-import org.sergio.grpc.HelloRequest;
-import org.sergio.grpc.HelloResponse;
-import org.sergio.grpc.HelloServiceGrpc;
 import org.sergio.wallet.grpc.*;
 
 import java.util.Arrays;
@@ -22,7 +19,7 @@ public class GrpcWalletService extends WalletServiceGrpc.WalletServiceImplBase {
             // Some transaction functionality based on the type.
 
             // Empty response equals to successful transaction.
-            return "successful";
+            return "";
         }
     }
 

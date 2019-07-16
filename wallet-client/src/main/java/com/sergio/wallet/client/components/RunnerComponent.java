@@ -1,15 +1,13 @@
-package com.sergio.wallet.client.Components;
+package com.sergio.wallet.client.components;
 
-import com.sergio.wallet.client.service.GrpcWalletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
-
-import com.sergio.wallet.client.service.GrpcHelloService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.sergio.wallet.client.services.GrpcWalletService;
 
 import java.util.Map;
 
