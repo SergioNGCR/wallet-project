@@ -22,6 +22,6 @@ dependencies {
     testImplementation "io.grpc:grpc-testing:${grpcVersion}"
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:${juniperVersion}"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${juniperVersion}"
-    testImplementation "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
+    /*testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${juniperVersion}"
+    testImplementation "org.mockito:mockito-junit-jupiter:${mockitoVersion}"*/
 }
