@@ -1,6 +1,7 @@
 package com.sergio.wallet.server;
 
-import com.sergio.wallet.server.services.GrpcWalletService;
+import com.sergio.wallet.server.data.repository.TransactionRepository;
+import com.sergio.wallet.server.service.GrpcWalletService;
 import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.inprocess.InProcessServerBuilder;
 import io.grpc.testing.GrpcCleanupRule;
@@ -8,18 +9,18 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.sergio.wallet.grpc.TransactionRequest;
-import org.sergio.wallet.grpc.TransactionResponse;
-import org.sergio.wallet.grpc.WalletServiceGrpc;
+import org.sergio.wallet.grpc.*;
 import org.sergio.wallet.grpc.WalletServiceGrpc.WalletServiceBlockingStub;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -37,6 +38,10 @@ public class WalletServerApplicationTests {
 
     private static WalletServiceBlockingStub testBlockingStub;
 
+    // TODO: We need to mock this dependency.
+    @Autowired
+    private static TransactionRepository transactionRepository;
+
     @BeforeClass
     public static void initTestClient() throws IOException {
         LOGGER.info("initTestClient");
@@ -46,7 +51,7 @@ public class WalletServerApplicationTests {
 
         // Create a server, add service, start, and register for automatic graceful shutdown.
         grpcCleanup.register(InProcessServerBuilder
-                .forName(serverName).directExecutor().addService(new GrpcWalletService()).build().start());
+                .forName(serverName).directExecutor().addService(new GrpcWalletService(transactionRepository)).build().start());
 
         testBlockingStub = WalletServiceGrpc.newBlockingStub(
                 // Create a client channel and register for automatic graceful shutdown.
@@ -62,24 +67,92 @@ public class WalletServerApplicationTests {
     public void when_Deposit_Is_Valid() {
         LOGGER.info("when_Deposit_Is_Valid");
 
-        TransactionResponse reply = testBlockingStub.deposit(TransactionRequest.newBuilder()
-                                        .setUserId("sergio")
-                                        .setAmount(100)
-                                        .setCurrency("USD").build());
+        TransactionResponse reply =
+            testBlockingStub.deposit(TransactionRequest.newBuilder()
+                .setUserId("testuser")
+                .setAmount(100)
+                .setCurrency("USD").build());
 
-        assertEquals("", reply.getMessage());
+        assertEquals(GrpcWalletService.RESPONSE_SUCCESSFUL, reply.getMessage());
     }
 
     @Test
-    public void when_Withdraw_Is_Invalid() {
-        LOGGER.info("when_Withdraw_Is_Invalid");
+    public void when_Deposit_Is_Invalid() {
+        LOGGER.info("when_Deposit_Is_Invalid");
 
-        TransactionResponse reply = testBlockingStub.withdraw(TransactionRequest.newBuilder()
-                .setUserId("sergio")
+        TransactionResponse reply =
+            testBlockingStub.deposit(TransactionRequest.newBuilder()
+                .setUserId("testuser")
+                .setAmount(100)
+                .setCurrency("USD2").build());
+
+        assertEquals(GrpcWalletService.RESPONSE_UNKNOWN_CURRENCY, reply.getMessage());
+    }
+
+    @Test
+    public void when_Withdraw_Is_Valid() {
+        LOGGER.info("when_Withdraw_Is_Valid");
+
+        TransactionResponse reply =
+            testBlockingStub.withdraw(TransactionRequest.newBuilder()
+                .setUserId("testuser")
+                .setAmount(100)
+                .setCurrency("USD").build());
+
+        assertEquals(GrpcWalletService.RESPONSE_SUCCESSFUL, reply.getMessage());
+    }
+
+    @Test
+    public void when_Withdraw_Is_Invalid_Currency() {
+        LOGGER.info("when_Withdraw_Is_Invalid_Currency");
+
+        TransactionResponse reply =
+            testBlockingStub.withdraw(TransactionRequest.newBuilder()
+                .setUserId("testuser")
                 .setAmount(100)
                 .setCurrency("USD1").build());
 
-        // There should be some static variable for this messages.
-        assertEquals("Unknown currency", reply.getMessage());
+        assertEquals(GrpcWalletService.RESPONSE_UNKNOWN_CURRENCY, reply.getMessage());
     }
+
+    @Test
+    public void when_Withdraw_Is_Invalid_Funds() {
+        LOGGER.info("when_Withdraw_Is_Invalid_Funds");
+
+        TransactionResponse reply =
+            testBlockingStub.withdraw(TransactionRequest.newBuilder()
+                .setUserId("testuser")
+                .setAmount(1000000)
+                .setCurrency("USD").build());
+
+        // TODO: Make sure to "activate" this test case once the functionality is available to mock.
+        //assertEquals(GrpcWalletService.RESPONSE_INSUFFICIENT_FUNDS, reply.getMessage());
+    }
+
+
+    @Test
+    public void when_getBalance_Is_Valid() {
+        LOGGER.info("when_getBalance_Is_Valid");
+
+        BalanceResponse reply =
+                testBlockingStub.getBalance(BalanceRequest.newBuilder()
+                        .setUserId("testuser")
+                        .build());
+
+        assertNotEquals(0, reply.getBalancesMap().size());
+    }
+
+    @Test
+    public void when_getBalance_Is_Invalid() {
+        LOGGER.info("when_getBalance_Is_Invalid");
+
+        BalanceResponse reply =
+                testBlockingStub.getBalance(BalanceRequest.newBuilder()
+                        .setUserId("missingUser")
+                        .build());
+
+        // TODO: Make sure to "activate" this test case once the functionality is available to mock.
+        //assertEquals(0, reply.getBalancesMap().size());
+    }
+
 }
