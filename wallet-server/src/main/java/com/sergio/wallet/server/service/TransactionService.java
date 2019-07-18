@@ -38,7 +38,7 @@ public class TransactionService {
     }
 
     public boolean isValidCurrency(String currency) {
-        return !VALID_CURRENCIES.contains(currency);
+        return VALID_CURRENCIES.contains(currency);
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
