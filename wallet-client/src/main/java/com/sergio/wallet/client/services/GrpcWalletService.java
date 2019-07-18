@@ -61,7 +61,7 @@ public class GrpcWalletService {
         return sendTransaction(request, true);
     }
 
-    public Map<String, Integer> getBalance(final String userId) {
+    public Map<String, Long> getBalance(final String userId) {
         final BalanceRequest request = BalanceRequest
                 .newBuilder()
                 .setUserId(userId)
@@ -71,7 +71,7 @@ public class GrpcWalletService {
             return response.getBalancesMap();
         } catch (final StatusRuntimeException e) {
             LOGGER.error("FAILED with " + e.getStatus().getCode().name());
-            return new HashMap<String, Integer>();
+            return new HashMap<String, Long>();
         }
     }
 }

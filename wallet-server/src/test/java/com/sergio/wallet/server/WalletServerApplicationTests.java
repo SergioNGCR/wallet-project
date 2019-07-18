@@ -1,7 +1,8 @@
 package com.sergio.wallet.server;
 
 import com.sergio.wallet.server.data.repository.TransactionRepository;
-import com.sergio.wallet.server.service.GrpcWalletService;
+import com.sergio.wallet.server.grpc.GrpcWalletService;
+import com.sergio.wallet.server.service.TransactionService;
 import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.inprocess.InProcessServerBuilder;
 import io.grpc.testing.GrpcCleanupRule;
@@ -40,7 +41,7 @@ public class WalletServerApplicationTests {
 
     // TODO: We need to mock this dependency.
     @Autowired
-    private static TransactionRepository transactionRepository;
+    private static TransactionService transactionService;
 
     @BeforeClass
     public static void initTestClient() throws IOException {
@@ -51,7 +52,7 @@ public class WalletServerApplicationTests {
 
         // Create a server, add service, start, and register for automatic graceful shutdown.
         grpcCleanup.register(InProcessServerBuilder
-                .forName(serverName).directExecutor().addService(new GrpcWalletService(transactionRepository)).build().start());
+                .forName(serverName).directExecutor().addService(new GrpcWalletService(transactionService)).build().start());
 
         testBlockingStub = WalletServiceGrpc.newBlockingStub(
                 // Create a client channel and register for automatic graceful shutdown.
@@ -73,7 +74,7 @@ public class WalletServerApplicationTests {
                 .setAmount(100)
                 .setCurrency("USD").build());
 
-        assertEquals(GrpcWalletService.RESPONSE_SUCCESSFUL, reply.getMessage());
+        assertEquals(TransactionService.RESPONSE_SUCCESSFUL, reply.getMessage());
     }
 
     @Test
@@ -86,7 +87,7 @@ public class WalletServerApplicationTests {
                 .setAmount(100)
                 .setCurrency("USD2").build());
 
-        assertEquals(GrpcWalletService.RESPONSE_UNKNOWN_CURRENCY, reply.getMessage());
+        assertEquals(TransactionService.RESPONSE_UNKNOWN_CURRENCY, reply.getMessage());
     }
 
     @Test
@@ -99,7 +100,7 @@ public class WalletServerApplicationTests {
                 .setAmount(100)
                 .setCurrency("USD").build());
 
-        assertEquals(GrpcWalletService.RESPONSE_SUCCESSFUL, reply.getMessage());
+        assertEquals(TransactionService.RESPONSE_SUCCESSFUL, reply.getMessage());
     }
 
     @Test
@@ -112,7 +113,7 @@ public class WalletServerApplicationTests {
                 .setAmount(100)
                 .setCurrency("USD1").build());
 
-        assertEquals(GrpcWalletService.RESPONSE_UNKNOWN_CURRENCY, reply.getMessage());
+        assertEquals(TransactionService.RESPONSE_UNKNOWN_CURRENCY, reply.getMessage());
     }
 
     @Test

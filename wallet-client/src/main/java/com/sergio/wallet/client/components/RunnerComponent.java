@@ -47,7 +47,7 @@ public class RunnerComponent implements CommandLineRunner {
         LOGGER.info("Recieved: " + result);
 
 
-        Map<String, Integer> map = this.walletService.getBalance(firstName);
+        Map<String, Long> map = this.walletService.getBalance(firstName);
 
         LOGGER.info("Recieved: Map size " + map.size());
     }
