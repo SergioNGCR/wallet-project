@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sergio.wallet.client.services.GrpcWalletService;
+import com.sergio.wallet.client.grpc.GrpcWalletClient;
 
 import java.util.Map;
 
@@ -17,10 +17,10 @@ public class RunnerComponent implements CommandLineRunner {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(RunnerComponent.class);
 
-    private final GrpcWalletService walletService;
+    private final GrpcWalletClient walletService;
 
     @Autowired
-    public RunnerComponent(GrpcWalletService walletService){
+    public RunnerComponent(GrpcWalletClient walletService){
         super();
         this.walletService = walletService;
     }
@@ -37,12 +37,12 @@ public class RunnerComponent implements CommandLineRunner {
 
         LOGGER.info("Sending request: firstName: " + firstName + " | lastname: " + lastName);
 
-        String result = this.walletService.deposit(firstName, 0, "USD");
+        String result = this.walletService.deposit(firstName, 100, "USD");
 
         LOGGER.info("Recieved: " + result);
 
 
-        result = this.walletService.withdraw(firstName, 0, "USD2");
+        result = this.walletService.withdraw(firstName, 200, "USD");
 
         LOGGER.info("Recieved: " + result);
 

@@ -1,4 +1,4 @@
-package com.sergio.wallet.client.services;
+package com.sergio.wallet.client.grpc;
 
 import org.springframework.stereotype.Service;
 
@@ -17,9 +17,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class GrpcWalletService {
+public class GrpcWalletClient {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(GrpcWalletService.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(GrpcWalletClient.class);
 
     @GrpcClient("local-grpc-server")
     private WalletServiceBlockingStub walletStub;
@@ -58,7 +58,7 @@ public class GrpcWalletService {
                 .setCurrency(currency)
                 .build();
 
-        return sendTransaction(request, true);
+        return sendTransaction(request, false);
     }
 
     public Map<String, Long> getBalance(final String userId) {

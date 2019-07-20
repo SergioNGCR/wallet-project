@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 public class Balance {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID", updatable = false, nullable = false)
     private long id;
 
     @Column(name = "USER_ID")
@@ -85,5 +85,18 @@ public class Balance {
                 ", modified=" + modified +
                 ", lastTransactionId=" + lastTransactionId +
                 '}';
+    }
+
+    /***
+     * Simple method to help modify the balance amount when depositing or withdrawing.
+     * @param amount
+     * @param isDeposit
+     */
+    public void modifyBalance(long amount, boolean isDeposit) {
+        if (isDeposit) {
+            balance += amount;
+        } else {
+            balance -= amount;
+        }
     }
 }
