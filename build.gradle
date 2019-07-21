@@ -4,17 +4,14 @@ version = '0.0.1-SNAPSHOT'
 subprojects {
     apply plugin: 'java'
 
-//    ext['junit-jupiter.version'] = '5.4.2'
-    
     ext {
         grpcVersion = '1.20.0'
         protocVersion = '3.7.1'
 
         springBootVersion = '2.1.6.RELEASE'
         springBootGrpcVersion = '2.4.0.RELEASE'
-        
-        juniperVersion = '5.4.2'
-        mockitoVersion = '2.27.0'
+
+        hamcrestVersion = '2.1'
     }
 
     compileJava {

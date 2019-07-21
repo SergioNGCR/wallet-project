@@ -11,10 +11,11 @@ import com.sergio.wallet.server.service.TransactionService;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.mockito.ArgumentMatchers.any;
+
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,16 +89,16 @@ public class TransactionServiceTests {
 
         when(transactionRepository.save(any(Transaction.class))).thenReturn(deposit);
 
-        assertEquals(TransactionService.RESPONSE_SUCCESSFUL,
-                transactionService.doDeposit(userId, depositAmount, validCurrency));
+        assertThat(transactionService.doDeposit(userId, depositAmount, validCurrency),
+                is(equalTo(TransactionService.RESPONSE_SUCCESSFUL)));
     }
 
     @Test
     public void when_Deposit_Is_Invalid() {
         LOGGER.info("when_Deposit_Is_Invalid");
 
-        assertEquals(TransactionService.RESPONSE_UNKNOWN_CURRENCY,
-                transactionService.doDeposit(userId, depositAmount, invalidCurrency));
+        assertThat(transactionService.doDeposit(userId, depositAmount, invalidCurrency),
+                is(equalTo(TransactionService.RESPONSE_UNKNOWN_CURRENCY)));
     }
 
     @Test
@@ -122,16 +123,16 @@ public class TransactionServiceTests {
 
         when(transactionRepository.save(any(Transaction.class))).thenReturn(withdraw);
 
-        assertEquals(TransactionService.RESPONSE_SUCCESSFUL,
-                transactionService.doWithdraw(userId, withdrawAmount, validCurrency));
+        assertThat(transactionService.doWithdraw(userId, withdrawAmount, validCurrency),
+                is(equalTo(TransactionService.RESPONSE_SUCCESSFUL)));
     }
 
     @Test
     public void when_Withdraw_Is_Invalid_Currency() {
         LOGGER.info("when_Withdraw_Is_Invalid_Currency");
 
-        assertEquals(TransactionService.RESPONSE_UNKNOWN_CURRENCY,
-                transactionService.doWithdraw(userId, withdrawAmount, invalidCurrency));
+        assertThat(transactionService.doWithdraw(userId, withdrawAmount, invalidCurrency),
+                is(equalTo(TransactionService.RESPONSE_UNKNOWN_CURRENCY)));
     }
 
     @Test
@@ -147,8 +148,8 @@ public class TransactionServiceTests {
 
         when(balanceRepository.findByUserIdAndCurrency(anyString(), anyString())).thenReturn(userBalance);
 
-        assertEquals(TransactionService.RESPONSE_INSUFFICIENT_FUNDS,
-                transactionService.doWithdraw(userId, 1000, validCurrency));
+        assertThat(transactionService.doWithdraw(userId, 1000, validCurrency),
+                    is(equalTo(TransactionService.RESPONSE_INSUFFICIENT_FUNDS)));
     }
 
 
@@ -169,7 +170,7 @@ public class TransactionServiceTests {
 
         when(balanceRepository.findAllByUserId(anyString())).thenReturn(userBalances);
 
-        assertNotEquals(0, transactionService.getBalance(userId).size());
+        assertThat(transactionService.getBalance(userId).size(), is(not(equalTo(0))));
     }
 
     @Test
@@ -178,7 +179,7 @@ public class TransactionServiceTests {
 
         when(balanceRepository.findAllByUserId(anyString())).thenReturn(new ArrayList<>());
 
-        assertEquals(0, transactionService.getBalance("missinguser").size());
+        assertThat(transactionService.getBalance("missinguser").size(), is(equalTo(0)));
     }
 
     //endregion

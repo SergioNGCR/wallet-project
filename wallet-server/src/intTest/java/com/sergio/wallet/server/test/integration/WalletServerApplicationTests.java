@@ -1,30 +1,31 @@
 package com.sergio.wallet.server.test.integration;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.sergio.wallet.grpc.*;
+import org.sergio.wallet.grpc.WalletServiceGrpc.WalletServiceBlockingStub;
 import com.sergio.wallet.server.grpc.GrpcWalletService;
 import com.sergio.wallet.server.service.TransactionService;
 import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.inprocess.InProcessServerBuilder;
 import io.grpc.testing.GrpcCleanupRule;
 
-import org.junit.*;
-
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.junit.runners.MethodSorters;
-import org.sergio.wallet.grpc.*;
-import org.sergio.wallet.grpc.WalletServiceGrpc.WalletServiceBlockingStub;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 
 /**
  * Main app's integration tests, needed for validating that the grpc server, transaction service
@@ -116,7 +117,7 @@ public class WalletServerApplicationTests {
                 .setAmount(withdrawAmount)
                 .setCurrency(currencyUsd).build());
 
-        assertEquals(TransactionService.RESPONSE_INSUFFICIENT_FUNDS, reply.getMessage());
+        assertThat(reply.getMessage(), is(equalTo(TransactionService.RESPONSE_INSUFFICIENT_FUNDS)));
     }
 
     @Test
@@ -129,7 +130,7 @@ public class WalletServerApplicationTests {
                 .setAmount(depositAmount)
                 .setCurrency(currencyUsd).build());
 
-        assertEquals(TransactionService.RESPONSE_SUCCESSFUL, reply.getMessage());
+        assertThat(reply.getMessage(), is(equalTo(TransactionService.RESPONSE_SUCCESSFUL)));
     }
 
     @Test
@@ -142,10 +143,10 @@ public class WalletServerApplicationTests {
                         .build());
 
         // We should have 1 balance available.
-        assertEquals(1, reply.getBalancesMap().size());
+        assertThat(reply.getBalancesMap().size(), is(equalTo(1)));
 
         // At this point we should have USD 100 positive balance.
-        assertEquals(100, reply.getBalancesMap().get(currencyUsd).longValue());
+        assertThat(reply.getBalancesMap().get(currencyUsd).intValue(), is(equalTo(100)));
     }
 
     @Test
@@ -158,7 +159,7 @@ public class WalletServerApplicationTests {
                         .setAmount(withdrawAmount)
                         .setCurrency(currencyUsd).build());
 
-        assertEquals(TransactionService.RESPONSE_INSUFFICIENT_FUNDS, reply.getMessage());
+        assertThat(reply.getMessage(), is(equalTo(TransactionService.RESPONSE_INSUFFICIENT_FUNDS)));
     }
 
     @Test
@@ -171,7 +172,7 @@ public class WalletServerApplicationTests {
                         .setAmount(depositAmount)
                         .setCurrency(currencyEur).build());
 
-        assertEquals(TransactionService.RESPONSE_SUCCESSFUL, reply.getMessage());
+        assertThat(reply.getMessage(), is(equalTo(TransactionService.RESPONSE_SUCCESSFUL)));
     }
 
     @Test
@@ -184,13 +185,13 @@ public class WalletServerApplicationTests {
                         .build());
 
         // We should have now 2 different currencies.
-        assertEquals(2, reply.getBalancesMap().size());
+        assertThat(reply.getBalancesMap().size(), is(equalTo(2)));
 
         // Also at this point we should have USD 100 positive balance.
-        assertEquals(100, reply.getBalancesMap().get(currencyUsd).longValue());
+        assertThat(reply.getBalancesMap().get(currencyUsd).intValue(), is(equalTo(100)));
 
         // Also at this point we should have EUR 100 positive balance.
-        assertEquals(100, reply.getBalancesMap().get(currencyEur).longValue());
+        assertThat(reply.getBalancesMap().get(currencyEur).intValue(), is(equalTo(100)));
     }
 
     @Test
@@ -203,7 +204,7 @@ public class WalletServerApplicationTests {
                         .setAmount(withdrawAmount)
                         .setCurrency(currencyUsd).build());
 
-        assertEquals(TransactionService.RESPONSE_INSUFFICIENT_FUNDS, reply.getMessage());
+        assertThat(reply.getMessage(), is(equalTo(TransactionService.RESPONSE_INSUFFICIENT_FUNDS)));
     }
 
     @Test
@@ -216,7 +217,7 @@ public class WalletServerApplicationTests {
                         .setAmount(depositAmount)
                         .setCurrency(currencyUsd).build());
 
-        assertEquals(TransactionService.RESPONSE_SUCCESSFUL, reply.getMessage());
+        assertThat(reply.getMessage(), is(equalTo(TransactionService.RESPONSE_SUCCESSFUL)));
     }
 
     @Test
@@ -229,13 +230,13 @@ public class WalletServerApplicationTests {
                         .build());
 
         // We should have now 2 different currencies.
-        assertEquals(2, reply.getBalancesMap().size());
+        assertThat(reply.getBalancesMap().size(), is(equalTo(2)));
 
         // Also at this point we should have USD 100 positive balance.
-        assertEquals(200, reply.getBalancesMap().get(currencyUsd).longValue());
+        assertThat(reply.getBalancesMap().get(currencyUsd).intValue(), is(equalTo(200)));
 
         // Also at this point we should have EUR 100 positive balance.
-        assertEquals(100, reply.getBalancesMap().get(currencyEur).longValue());
+        assertThat(reply.getBalancesMap().get(currencyEur).intValue(), is(equalTo(100)));
     }
 
     @Test
@@ -248,7 +249,7 @@ public class WalletServerApplicationTests {
                         .setAmount(withdrawAmount)
                         .setCurrency(currencyUsd).build());
 
-        assertEquals(TransactionService.RESPONSE_SUCCESSFUL, reply.getMessage());
+        assertThat(reply.getMessage(), is(equalTo(TransactionService.RESPONSE_SUCCESSFUL)));
     }
 
     @Test
@@ -261,13 +262,13 @@ public class WalletServerApplicationTests {
                         .build());
 
         // We should have now 2 different currencies.
-        assertEquals(2, reply.getBalancesMap().size());
+        assertThat(reply.getBalancesMap().size(), is(equalTo(2)));
 
         // Also at this point we should have USD 0 balance.
-        assertEquals(0, reply.getBalancesMap().get(currencyUsd).longValue());
+        assertThat(reply.getBalancesMap().get(currencyUsd).intValue(), is(equalTo(0)));
 
         // Also at this point we should have EUR 100 positive balance.
-        assertEquals(100, reply.getBalancesMap().get(currencyEur).longValue());
+        assertThat(reply.getBalancesMap().get(currencyEur).intValue(), is(equalTo(100)));
     }
 
     @Test
@@ -280,7 +281,7 @@ public class WalletServerApplicationTests {
                         .setAmount(withdrawAmount)
                         .setCurrency(currencyUsd).build());
 
-        assertEquals(TransactionService.RESPONSE_INSUFFICIENT_FUNDS, reply.getMessage());
+        assertThat(reply.getMessage(), is(equalTo(TransactionService.RESPONSE_INSUFFICIENT_FUNDS)));
     }
 
     //endregion
