@@ -4,7 +4,7 @@ version = '0.0.1-SNAPSHOT'
 subprojects {
     apply plugin: 'java'
 
-    ext['junit-jupiter.version'] = '5.4.2'
+//    ext['junit-jupiter.version'] = '5.4.2'
     
     ext {
         grpcVersion = '1.20.0'

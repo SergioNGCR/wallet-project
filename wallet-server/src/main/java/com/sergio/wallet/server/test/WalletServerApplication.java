@@ -1,8 +1,11 @@
-package com.sergio.wallet.server;
+package com.sergio.wallet.server.test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * Main app starting point.
+ */
 @SpringBootApplication
 public class WalletServerApplication {
 

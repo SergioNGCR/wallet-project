@@ -1,8 +1,12 @@
-package com.sergio.wallet.server.data.entity;
+package com.sergio.wallet.server.test.data.entity;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+/**
+ * Entity bean to describe the Transaction table, referenced by the repository
+ * TransactionRepository for all corresponding interactions with the DB.
+ */
 @Entity
 @Table(name = "TRANSACTION")
 public class Transaction {
@@ -26,6 +30,22 @@ public class Transaction {
 
     @Column(name = "DATE")
     private LocalDateTime date;
+
+    //region PUBLIC METHODS
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "id=" + id +
+                ", userId='" + userId + '\'' +
+                ", deposit=" + deposit +
+                ", withdraw=" + withdraw +
+                ", currency='" + currency + '\'' +
+                ", date=" + date +
+                '}';
+    }
+
+    //region GETTERS & SETTERS
 
     public long getId() {
         return id;
@@ -75,15 +95,8 @@ public class Transaction {
         this.date = date;
     }
 
-    @Override
-    public String toString() {
-        return "Transaction{" +
-                "id=" + id +
-                ", userId='" + userId + '\'' +
-                ", deposit=" + deposit +
-                ", withdraw=" + withdraw +
-                ", currency='" + currency + '\'' +
-                ", date=" + date +
-                '}';
-    }
+    //endregion
+
+    //endregion
+
 }

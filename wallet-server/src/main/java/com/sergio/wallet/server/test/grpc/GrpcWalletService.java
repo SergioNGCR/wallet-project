@@ -1,7 +1,6 @@
-package com.sergio.wallet.server.grpc;
+package com.sergio.wallet.server.test.grpc;
 
-import com.sergio.wallet.server.data.repository.TransactionRepository;
-import com.sergio.wallet.server.service.TransactionService;
+import com.sergio.wallet.server.test.service.TransactionService;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 
@@ -14,23 +13,33 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
 
-/***
+/**
  * Main gRPC Service class that handles the endpoints for the wallet server, it provides the functionality
  * for making deposits, withdraws and retrieving an user's balance for all currencies.
  */
 @GrpcService
 public class GrpcWalletService extends WalletServiceImplBase {
 
+    //region VARIABLES
+
     private final static Logger LOGGER = LoggerFactory.getLogger(GrpcWalletService.class);
 
     private final TransactionService transactionService;
+
+    //endregion
+
+    //region CONSTRUCTORS
 
     @Autowired
     public GrpcWalletService(TransactionService transactionService) {
         this.transactionService = transactionService;
     }
 
-    /***
+    //endregion
+
+    //region PUBLIC METHODS - GRPC ENDPOINTS
+
+    /**
      * Endpoint for making deposit requests.
      * @param request
      * @param responseObserver
@@ -53,7 +62,7 @@ public class GrpcWalletService extends WalletServiceImplBase {
         responseObserver.onCompleted();
     }
 
-    /***
+    /**
      * Endpoint for making withdraw requests.
      * @param request
      * @param responseObserver
@@ -76,7 +85,7 @@ public class GrpcWalletService extends WalletServiceImplBase {
         responseObserver.onCompleted();
     }
 
-    /***
+    /**
      * Endpoint for making balance requests.
      * @param request
      * @param responseObserver
@@ -92,4 +101,6 @@ public class GrpcWalletService extends WalletServiceImplBase {
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }
+
+    //endregion
 }

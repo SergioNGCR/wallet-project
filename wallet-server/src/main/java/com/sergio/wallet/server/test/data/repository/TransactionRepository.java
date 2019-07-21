@@ -1,11 +1,14 @@
-package com.sergio.wallet.server.data.repository;
+package com.sergio.wallet.server.test.data.repository;
 
-import com.sergio.wallet.server.data.entity.Transaction;
+import com.sergio.wallet.server.test.data.entity.Transaction;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * Basic interface to handle the repository for the Transaction table.
+ */
 @Repository
 public interface TransactionRepository extends CrudRepository<Transaction, Long> {
 

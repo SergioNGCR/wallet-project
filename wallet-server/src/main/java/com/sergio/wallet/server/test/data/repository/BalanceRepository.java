@@ -1,11 +1,14 @@
-package com.sergio.wallet.server.data.repository;
+package com.sergio.wallet.server.test.data.repository;
 
-import com.sergio.wallet.server.data.entity.Balance;
+import com.sergio.wallet.server.test.data.entity.Balance;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * Basic interface to handle the repository for the Balance table.
+ */
 @Repository
 public interface BalanceRepository extends CrudRepository<Balance, Long> {
 

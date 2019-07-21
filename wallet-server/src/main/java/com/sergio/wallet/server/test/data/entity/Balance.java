@@ -1,8 +1,12 @@
-package com.sergio.wallet.server.data.entity;
+package com.sergio.wallet.server.test.data.entity;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+/**
+ * Entity bean to describe the Balance table, referenced by the repository
+ * BalanceRepository for all corresponding interactions with the DB.
+ */
 @Entity
 @Table(name = "BALANCE")
 public class Balance {
@@ -26,6 +30,35 @@ public class Balance {
 
     @Column(name = "LAST_TRANSACTION_ID")
     private long lastTransactionId;
+
+    //region PUBLIC METHODS
+
+    /**
+     * Simple method to help modify the balance amount when depositing or withdrawing.
+     * @param amount
+     * @param isDeposit
+     */
+    public void modifyBalance(long amount, boolean isDeposit) {
+        if (isDeposit) {
+            balance += amount;
+        } else {
+            balance -= amount;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "Balance{" +
+                "id=" + id +
+                ", userId='" + userId + '\'' +
+                ", balance=" + balance +
+                ", currency='" + currency + '\'' +
+                ", modified=" + modified +
+                ", lastTransactionId=" + lastTransactionId +
+                '}';
+    }
+
+    //region GETTERS & SETTERS
 
     public long getId() {
         return id;
@@ -75,28 +108,8 @@ public class Balance {
         this.lastTransactionId = lastTransactionId;
     }
 
-    @Override
-    public String toString() {
-        return "Balance{" +
-                "id=" + id +
-                ", userId='" + userId + '\'' +
-                ", balance=" + balance +
-                ", currency='" + currency + '\'' +
-                ", modified=" + modified +
-                ", lastTransactionId=" + lastTransactionId +
-                '}';
-    }
+    //endregion
 
-    /***
-     * Simple method to help modify the balance amount when depositing or withdrawing.
-     * @param amount
-     * @param isDeposit
-     */
-    public void modifyBalance(long amount, boolean isDeposit) {
-        if (isDeposit) {
-            balance += amount;
-        } else {
-            balance -= amount;
-        }
-    }
+    //endregion
+
 }

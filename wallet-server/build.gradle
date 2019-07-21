@@ -7,6 +7,20 @@ apply plugin: 'io.spring.dependency-management'
 group = 'com.sergio.wallet.server'
 version = '0.0.1-SNAPSHOT'
 
+sourceSets {
+    intTest {
+        java.srcDir file('src/intTest/java')
+        resources.srcDir file('src/intTest/resources')
+        compileClasspath += sourceSets.main.output + configurations.testRuntime
+        runtimeClasspath += output + compileClasspath
+    }
+}
+
+configurations {
+    intTestImplementation.extendsFrom implementation
+    intTestRuntimeOnly.extendsFrom runtimeOnly
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -17,11 +31,43 @@ dependencies {
     implementation project(':grpc')
 
     runtimeOnly 'mysql:mysql-connector-java'
-    
+
+    // Dependencies for Unit tests only
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation "io.grpc:grpc-testing:${grpcVersion}"
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:${juniperVersion}"
-    /*testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${juniperVersion}"
-    testImplementation "org.mockito:mockito-junit-jupiter:${mockitoVersion}"*/
+    testImplementation "org.junit.jupiter:junit-jupiter-params:${juniperVersion}"
+    testRuntime "org.junit.jupiter:junit-jupiter-engine:${juniperVersion}"
+
+    testImplementation "org.mockito:mockito-core:${mockitoVersion}"
+    testImplementation "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
+
+    // Dependencies for Integration tests only
+    intTestImplementation 'org.springframework.boot:spring-boot-starter-test'
+    intTestImplementation "io.grpc:grpc-testing:${grpcVersion}"
+
+    intTestImplementation "org.junit.jupiter:junit-jupiter-api:${juniperVersion}"
+    intTestImplementation "org.junit.jupiter:junit-jupiter-params:${juniperVersion}"
+    intTestRuntime "org.junit.jupiter:junit-jupiter-engine:${juniperVersion}"
+
+    intTestImplementation "org.mockito:mockito-core:${mockitoVersion}"
+    intTestImplementation "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
 }
+
+test {
+    useJUnitPlatform()
+}
+
+task integrationTest(type: Test) {
+    useJUnitPlatform()
+    
+    description = 'Runs integration tests.'
+    group = 'verification'
+
+    testClassesDirs = sourceSets.intTest.output.classesDirs
+    classpath = sourceSets.intTest.runtimeClasspath
+//    mustRunAfter test
+}
+
+//check.dependsOn integrationTest
