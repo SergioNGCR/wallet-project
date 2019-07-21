@@ -17,8 +17,8 @@ sourceSets {
 }
 
 configurations {
-    intTestImplementation.extendsFrom implementation
-    intTestRuntimeOnly.extendsFrom runtimeOnly
+    intTestImplementation.extendsFrom testImplementation
+    intTestRuntimeOnly.extendsFrom testRuntimeOnly
 }
 
 dependencies {
@@ -32,42 +32,21 @@ dependencies {
 
     runtimeOnly 'mysql:mysql-connector-java'
 
-    // Dependencies for Unit tests only
+    // Dependencies for Unit tests only.
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation "io.grpc:grpc-testing:${grpcVersion}"
 
-    testImplementation "org.junit.jupiter:junit-jupiter-api:${juniperVersion}"
-    testImplementation "org.junit.jupiter:junit-jupiter-params:${juniperVersion}"
-    testRuntime "org.junit.jupiter:junit-jupiter-engine:${juniperVersion}"
-
-    testImplementation "org.mockito:mockito-core:${mockitoVersion}"
-    testImplementation "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
-
-    // Dependencies for Integration tests only
-    intTestImplementation 'org.springframework.boot:spring-boot-starter-test'
-    intTestImplementation "io.grpc:grpc-testing:${grpcVersion}"
-
-    intTestImplementation "org.junit.jupiter:junit-jupiter-api:${juniperVersion}"
-    intTestImplementation "org.junit.jupiter:junit-jupiter-params:${juniperVersion}"
-    intTestRuntime "org.junit.jupiter:junit-jupiter-engine:${juniperVersion}"
-
-    intTestImplementation "org.mockito:mockito-core:${mockitoVersion}"
-    intTestImplementation "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
-}
-
-test {
-    useJUnitPlatform()
+    // Dependencies for Integration tests only.
+    // none specific for intTestImplementation yet
 }
 
 task integrationTest(type: Test) {
-    useJUnitPlatform()
-    
     description = 'Runs integration tests.'
     group = 'verification'
 
     testClassesDirs = sourceSets.intTest.output.classesDirs
     classpath = sourceSets.intTest.runtimeClasspath
-//    mustRunAfter test
+    mustRunAfter test
 }
 
-//check.dependsOn integrationTest
+check.dependsOn integrationTest

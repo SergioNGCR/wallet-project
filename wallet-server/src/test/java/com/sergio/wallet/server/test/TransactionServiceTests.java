@@ -1,36 +1,46 @@
 package com.sergio.wallet.server.test;
 
-import com.sergio.wallet.server.test.data.entity.Balance;
-import com.sergio.wallet.server.test.data.entity.Transaction;
-import com.sergio.wallet.server.test.data.repository.BalanceRepository;
-import com.sergio.wallet.server.test.data.repository.TransactionRepository;
-import com.sergio.wallet.server.test.service.TransactionService;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import com.sergio.wallet.server.data.entity.Balance;
+import com.sergio.wallet.server.data.entity.Transaction;
+import com.sergio.wallet.server.data.repository.BalanceRepository;
+import com.sergio.wallet.server.data.repository.TransactionRepository;
+import com.sergio.wallet.server.service.TransactionService;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(SpringExtension.class)
-@ExtendWith(MockitoExtension.class)
-@ContextConfiguration(classes = {TransactionService.class, TransactionRepository.class})
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.ArrayList;
+import java.util.List;
+
+
+/**
+ * Simple unit test class for validating the methods from TransactionService class.
+ */
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = TransactionService.class)
 public class TransactionServiceTests {
+
+    //region VARIABLES
 
     private final Logger LOGGER = LoggerFactory.getLogger(TransactionServiceTests.class);
 
-    @Mock
+    @MockBean
     private TransactionRepository transactionRepository;
 
-    @Mock
+    @MockBean
     private BalanceRepository balanceRepository;
 
     @Autowired
@@ -52,16 +62,126 @@ public class TransactionServiceTests {
 
     //endregion
 
+    //endregion
+
+    //region TEST METHODS
+
     @Test
     public void when_Deposit_Is_Valid() {
         LOGGER.info("when_Deposit_Is_Valid");
 
+        Balance userBalance = new Balance();
+        userBalance.setUserId(userId);
+        userBalance.setBalance(depositAmount);
+        userBalance.setCurrency(validCurrency);
+        userBalance.setId(1);
+        userBalance.setLastTransactionId(1);
+
         when(balanceRepository.findByUserIdAndCurrency(anyString(), anyString())).thenReturn(null);
-        when(balanceRepository.save(any(Balance.class))).getMock();
+        when(balanceRepository.save(any(Balance.class))).thenReturn(userBalance);
 
-        when(transactionRepository.save(any(Transaction.class))).getMock();
+        Transaction deposit = new Transaction();
+        deposit.setUserId(userId);
+        deposit.setDeposit(depositAmount);
+        deposit.setCurrency(validCurrency);
+        deposit.setId(1);
 
-        assertEquals(TransactionService.RESPONSE_SUCCESSFUL, transactionService.doDeposit(userId, depositAmount, validCurrency));
+        when(transactionRepository.save(any(Transaction.class))).thenReturn(deposit);
+
+        assertEquals(TransactionService.RESPONSE_SUCCESSFUL,
+                transactionService.doDeposit(userId, depositAmount, validCurrency));
     }
+
+    @Test
+    public void when_Deposit_Is_Invalid() {
+        LOGGER.info("when_Deposit_Is_Invalid");
+
+        assertEquals(TransactionService.RESPONSE_UNKNOWN_CURRENCY,
+                transactionService.doDeposit(userId, depositAmount, invalidCurrency));
+    }
+
+    @Test
+    public void when_Withdraw_Is_Valid() {
+        LOGGER.info("when_Withdraw_Is_Valid");
+
+        Balance userBalance = new Balance();
+        userBalance.setUserId(userId);
+        userBalance.setBalance(depositAmount);
+        userBalance.setCurrency(validCurrency);
+        userBalance.setId(1);
+        userBalance.setLastTransactionId(1);
+
+        when(balanceRepository.findByUserIdAndCurrency(anyString(), anyString())).thenReturn(userBalance);
+        when(balanceRepository.save(any(Balance.class))).thenReturn(userBalance);
+
+        Transaction withdraw = new Transaction();
+        withdraw.setUserId(userId);
+        withdraw.setWithdraw(withdrawAmount);
+        withdraw.setCurrency(validCurrency);
+        withdraw.setId(2);
+
+        when(transactionRepository.save(any(Transaction.class))).thenReturn(withdraw);
+
+        assertEquals(TransactionService.RESPONSE_SUCCESSFUL,
+                transactionService.doWithdraw(userId, withdrawAmount, validCurrency));
+    }
+
+    @Test
+    public void when_Withdraw_Is_Invalid_Currency() {
+        LOGGER.info("when_Withdraw_Is_Invalid_Currency");
+
+        assertEquals(TransactionService.RESPONSE_UNKNOWN_CURRENCY,
+                transactionService.doWithdraw(userId, withdrawAmount, invalidCurrency));
+    }
+
+    @Test
+    public void when_Withdraw_Is_Invalid_Funds() {
+        LOGGER.info("when_Withdraw_Is_Invalid_Funds");
+
+        Balance userBalance = new Balance();
+        userBalance.setUserId(userId);
+        userBalance.setBalance(depositAmount);
+        userBalance.setCurrency(validCurrency);
+        userBalance.setId(1);
+        userBalance.setLastTransactionId(1);
+
+        when(balanceRepository.findByUserIdAndCurrency(anyString(), anyString())).thenReturn(userBalance);
+
+        assertEquals(TransactionService.RESPONSE_INSUFFICIENT_FUNDS,
+                transactionService.doWithdraw(userId, 1000, validCurrency));
+    }
+
+
+    @Test
+    public void when_getBalance_Is_Valid() {
+        LOGGER.info("when_getBalance_Is_Valid");
+
+        List<Balance> userBalances = new ArrayList<>();
+
+        Balance validCurrencyBalance = new Balance();
+        validCurrencyBalance.setUserId(userId);
+        validCurrencyBalance.setBalance(0);
+        validCurrencyBalance.setCurrency(validCurrency);
+        validCurrencyBalance.setId(1);
+        validCurrencyBalance.setLastTransactionId(2);
+
+        userBalances.add(validCurrencyBalance);
+
+        when(balanceRepository.findAllByUserId(anyString())).thenReturn(userBalances);
+
+        assertNotEquals(0, transactionService.getBalance(userId).size());
+    }
+
+    @Test
+    public void when_getBalance_Is_Invalid() {
+        LOGGER.info("when_getBalance_Is_Invalid");
+
+        when(balanceRepository.findAllByUserId(anyString())).thenReturn(new ArrayList<>());
+
+        assertEquals(0, transactionService.getBalance("missinguser").size());
+    }
+
+    //endregion
+
 
 }

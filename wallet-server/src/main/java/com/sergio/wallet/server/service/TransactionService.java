@@ -1,9 +1,9 @@
-package com.sergio.wallet.server.test.service;
+package com.sergio.wallet.server.service;
 
-import com.sergio.wallet.server.test.data.entity.Balance;
-import com.sergio.wallet.server.test.data.entity.Transaction;
-import com.sergio.wallet.server.test.data.repository.BalanceRepository;
-import com.sergio.wallet.server.test.data.repository.TransactionRepository;
+import com.sergio.wallet.server.data.entity.Balance;
+import com.sergio.wallet.server.data.entity.Transaction;
+import com.sergio.wallet.server.data.repository.BalanceRepository;
+import com.sergio.wallet.server.data.repository.TransactionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,13 +53,12 @@ public class TransactionService {
      * if it doesn't exists it creates a new one.
      * @param userId
      * @param currency
-     * @param createIfAbsent Defines if the method should create a new balance for the user if it can't be found.
      * @return The balance in the specific currency for that user.
      */
-    private Balance findOrCreateBalance(String userId, String currency, boolean createIfAbsent) {
+    private Balance findOrCreateBalance(String userId, String currency) {
         Balance balance = balanceRepository.findByUserIdAndCurrency(userId, currency);
 
-        if (balance == null && createIfAbsent){
+        if (balance == null){
             balance = new Balance();
             balance.setUserId(userId);
             balance.setCurrency(currency);
@@ -82,8 +81,13 @@ public class TransactionService {
      * @return
      */
     private String executeTransaction(String userId, long amount, String currency, boolean isDeposit) {
+        // First check the currency is a valid one.
+        if(!VALID_CURRENCIES.contains(currency)) {
+            return TransactionService.RESPONSE_UNKNOWN_CURRENCY;
+        }
+
         // Let's retrieve the balance for the user and currency, create if absent only for deposits.
-        Balance balance = findOrCreateBalance(userId, currency, isDeposit);
+        Balance balance = findOrCreateBalance(userId, currency);
 
         // Should probably validate if negative amount, though no such error message is defined in the exercise.
 
@@ -122,10 +126,6 @@ public class TransactionService {
     //endregion
 
     //region PUBLIC METHODS
-
-    public boolean isValidCurrency(String currency) {
-        return VALID_CURRENCIES.contains(currency);
-    }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public String doDeposit(String userId, long amount, String currency) {

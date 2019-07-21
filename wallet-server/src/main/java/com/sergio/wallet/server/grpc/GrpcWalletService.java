@@ -1,6 +1,6 @@
-package com.sergio.wallet.server.test.grpc;
+package com.sergio.wallet.server.grpc;
 
-import com.sergio.wallet.server.test.service.TransactionService;
+import com.sergio.wallet.server.service.TransactionService;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 
@@ -48,13 +48,7 @@ public class GrpcWalletService extends WalletServiceImplBase {
     public void deposit(TransactionRequest request, StreamObserver<TransactionResponse> responseObserver) {
         LOGGER.debug("Request for DEPOSIT received");
 
-        String result;
-
-        if(transactionService.isValidCurrency(request.getCurrency())) {
-             result = transactionService.doDeposit(request.getUserId(), request.getAmount(), request.getCurrency());
-        } else {
-            result = TransactionService.RESPONSE_UNKNOWN_CURRENCY;
-        }
+        String result = transactionService.doDeposit(request.getUserId(), request.getAmount(), request.getCurrency());
 
         TransactionResponse response = TransactionResponse.newBuilder().setMessage(result).build();
 
@@ -71,13 +65,7 @@ public class GrpcWalletService extends WalletServiceImplBase {
     public void withdraw(TransactionRequest request, StreamObserver<TransactionResponse> responseObserver) {
         LOGGER.debug("Request for WITHDRAW received");
 
-        String result;
-
-        if(transactionService.isValidCurrency(request.getCurrency())) {
-            result = transactionService.doWithdraw(request.getUserId(), request.getAmount(), request.getCurrency());
-        } else {
-            result = TransactionService.RESPONSE_UNKNOWN_CURRENCY;
-        }
+        String result = transactionService.doWithdraw(request.getUserId(), request.getAmount(), request.getCurrency());
 
         TransactionResponse response = TransactionResponse.newBuilder().setMessage(result).build();
 

@@ -1,4 +1,4 @@
-package com.sergio.wallet.server.test.data.entity;
+package com.sergio.wallet.server.data.entity;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
