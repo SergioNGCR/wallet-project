@@ -6,7 +6,6 @@ import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.stream.Stream;
 
 /**
  * Simple class to emulate the idea of a user that will perform tasks/requests to the wallet-server.
@@ -69,20 +68,7 @@ public class User {
 
         // Test tasks.
         for (int i = 0; i < this.threadPools.size(); i++) {
-            List<Callable<Boolean>> callables = new ArrayList<>();
-            for (int j = 0; j < roundsPerThread; j++) {
-                final int callId = j+1;
-                callables.add(() -> {
-                    TimeUnit.SECONDS.sleep(1);
-                    String roundName = "Round"+callId;
-                    String name = Thread.currentThread().getName();
-                    LOGGER.info("User: " + this.id + " | " + name + " | " + roundName + " Starting work.");
-                    TimeUnit.SECONDS.sleep(2);
-                    LOGGER.info("User: " + this.id + " | " + name + " | " + roundName  + " Work finished.");
-                    return true;
-                });
-            }
-            this.callableTasksMap.put(i, callables);
+            this.callableTasksMap.put(i, RoundsFactory.getRoundsRandomly(roundsPerThread, this.getId(), LOGGER));
         }
     }
 
