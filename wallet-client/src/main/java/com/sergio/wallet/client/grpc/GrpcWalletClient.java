@@ -1,5 +1,7 @@
 package com.sergio.wallet.client.grpc;
 
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import org.slf4j.Logger;
@@ -20,6 +22,7 @@ import java.util.Map;
  * Main grpc client class, encapsulating the grpc functionality and simplifies making requests to the grpc server.
  */
 @Service
+@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class GrpcWalletClient {
 
     //region VARIABLES
@@ -47,7 +50,8 @@ public class GrpcWalletClient {
                     this.walletStub.withdraw(request);
             message = response.getMessage();
         } catch (final StatusRuntimeException e) {
-            message = "gRPC " + (isDeposit ? "deposit" : "withdraw")
+            String threadName = Thread.currentThread().getName();
+            message = threadName + " | " + "gRPC " + (isDeposit ? "deposit" : "withdraw")
                         + " request failed. | " + e.getStatus().getCode().name();
             LOGGER.error(message);
         }
@@ -112,7 +116,8 @@ public class GrpcWalletClient {
             final BalanceResponse response = this.walletStub.getBalance(request);
             return response.getBalancesMap();
         } catch (final StatusRuntimeException e) {
-            LOGGER.error("gRPC balance request failed. | " + e.getStatus().getCode().name());
+            String threadName = Thread.currentThread().getName();
+            LOGGER.error(threadName + " | " + "gRPC balance request failed. | " + e.getStatus().getCode().name());
             return new HashMap<String, Long>();
         }
     }

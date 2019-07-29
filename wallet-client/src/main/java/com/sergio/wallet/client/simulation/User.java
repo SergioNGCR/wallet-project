@@ -2,7 +2,10 @@ package com.sergio.wallet.client.simulation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
+
+import com.sergio.wallet.client.grpc.GrpcWalletClient;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -30,17 +33,30 @@ public class User {
 
     private final int id;
 
+    /** A GrpcWalletClient instance exclusively for each user. */
+    private final GrpcWalletClient walletClient;
+
     //endregion
 
     //region CONSTRUCTORS
 
-    public User(int id, int maxAllowedThreads, int roundsPerThread) {
+    /**
+     * User constructor to assign it an id, the number of allowed threads to use for task execution and the number
+     * of rounds each thread needs to complete.
+     * @param id
+     * @param maxAllowedThreads
+     * @param roundsPerThread
+     */
+    public User(int id, int maxAllowedThreads, int roundsPerThread, GrpcWalletClient walletClient) {
         this.id = id;
+
+        this.walletClient = walletClient;
 
         // Define and execute some sort of user simulation.
         List<ExecutorService> tmpExecutors = new ArrayList<>();
 
         for (int i = 1; i <= maxAllowedThreads; i++) {
+            // Create a new single thread Executor so that only 1 thread is processing the tasks in the queue.
             tmpExecutors.add(Executors.newSingleThreadExecutor(
                     new CustomizableThreadFactory("user-" + this.getId() + "-pool-" + i + "-thread-")));
         }
@@ -63,12 +79,9 @@ public class User {
     private void pickRounds(int roundsPerThread) {
         this.callableTasksMap = new HashMap<>();
 
-        // Use external class to pick from the available rounds at random.
-        // This will fill the list of callable tasks to be done by each thread pool.
-
-        // Test tasks.
+        // Use the rounds factory class to pick from the available rounds at random.
         for (int i = 0; i < this.threadPools.size(); i++) {
-            this.callableTasksMap.put(i, RoundsFactory.getRoundsRandomly(roundsPerThread, this.getId(), LOGGER));
+            this.callableTasksMap.put(i, RoundsFactory.getRoundsRandomly(roundsPerThread, this));
         }
     }
 
@@ -77,7 +90,35 @@ public class User {
     //region PUBLIC METHODS
 
     public int getId() {
-        return id;
+        return this.id;
+    }
+
+    public GrpcWalletClient getWalletClient() {
+        return this.walletClient;
+    }
+
+    /**
+     * Simple method to log info messages using the User class logger.
+     * @param message
+     */
+    public void logInfo(String message) {
+        LOGGER.info(message);
+    }
+
+    /**
+     * Simple method to log error messages using the User class logger.
+     * @param message
+     */
+    public void logError(String message) {
+        LOGGER.error(message);
+    }
+
+    /**
+     * Simple method to log debug messages using the User class logger.
+     * @param message
+     */
+    public void logDebug(String message) {
+        LOGGER.debug(message);
     }
 
     /**
@@ -87,8 +128,8 @@ public class User {
     public boolean isRunningTasks() {
         // We want to quickly report that there are tasks still running.
         // Object boolean as we will receive null when all tasks are done.
-        Boolean anyPendingTask = this.futureTasksMap.searchValues(1, futures ->
-                    futures.parallelStream().anyMatch(future -> !future.isDone())
+        Boolean anyPendingTask = this.futureTasksMap.values().stream().anyMatch(futures ->
+                    futures.stream().anyMatch(future -> !future.isDone())
                 );
 
         return anyPendingTask == null ? false : anyPendingTask.booleanValue();
@@ -100,16 +141,20 @@ public class User {
     public void executeTasks() {
         int idx = 0;
 
-        for (ExecutorService executor : this.threadPools) {
-            List<Future<Boolean>> futures = new ArrayList<>();
-            for (Callable<Boolean> task : this.callableTasksMap.get(idx)){
-                futures.add(executor.submit(task));
+        try {
+            for (ExecutorService executor : this.threadPools) {
+                List<Future<Boolean>> futures = new ArrayList<>();
+                for (Callable<Boolean> task : this.callableTasksMap.get(idx)) {
+                    futures.add(executor.submit(task));
+                }
+                this.futureTasksMap.put(idx, futures);
+                idx++;
             }
-            this.futureTasksMap.put(idx, futures);
-            idx++;
-        }
 
-        LOGGER.info("User: " + this.getId() + " started execution on all threads!!");
+            logInfo("User: " + this.getId() + " started execution on all threads.");
+        } catch (Exception e) {
+            logError("User: " + this.getId() + " | error thrown while starting execution | " + e.getMessage());
+        }
     }
 
     /**
@@ -118,17 +163,17 @@ public class User {
     public void shutdownUser() {
         this.threadPools.parallelStream().forEach(executor -> {
             try {
-                LOGGER.info("User: " + this.getId() + " | " + "attempting to shutdown executor");
+                logDebug("User: " + this.getId() + " | " + "attempting to shutdown executor.");
                 executor.shutdown();
-                executor.awaitTermination(20, TimeUnit.SECONDS);
+                executor.awaitTermination(5, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
-                LOGGER.info("User: " + this.getId() + " | " + "tasks interrupted");
+                logDebug("User: " + this.getId() + " | " + "shutdown interrupted.");
             } finally {
                 if (!executor.isTerminated()) {
-                    LOGGER.info("User: " + this.getId() + " | " + "cancel non-finished tasks");
+                    logDebug("User: " + this.getId() + " | " + "cancel non-finished tasks.");
                 }
                 executor.shutdownNow();
-                LOGGER.info("User: " + this.getId() + " | " + "shutdown finished");
+                logDebug("User: " + this.getId() + " | " + "shutdown finished.");
             }
         });
     }

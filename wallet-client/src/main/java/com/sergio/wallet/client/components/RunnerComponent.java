@@ -3,16 +3,15 @@ package com.sergio.wallet.client.components;
 import com.sergio.wallet.client.simulation.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sergio.wallet.client.grpc.GrpcWalletClient;
-
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -26,18 +25,27 @@ public class RunnerComponent implements CommandLineRunner {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(RunnerComponent.class);
 
-    private final boolean testingGrpc = false;
+    // Necessary for defining at configuration level the arguments pass to the application.
+    private final WalletClientConfiguration walletClientConfiguration;
 
-    private final GrpcWalletClient walletService;
+    // Necessary for creating User beans that have their own GrpcWalletClient instance.
+    private final ApplicationContext applicationContext;
+
+    // Used for simple memory status reports for debug logging.
+    private final Runtime runtime = Runtime.getRuntime();
+
+    // Keeping track of how many seconds have past since last print of memory status.
+    private long lastMemPrint;
 
     //endregion
 
     //region CONSTRUCTORS
 
     @Autowired
-    public RunnerComponent(GrpcWalletClient walletService) {
+    public RunnerComponent(ApplicationContext applicationContext, WalletClientConfiguration walletClientConfiguration) {
         super();
-        this.walletService = walletService;
+        this.applicationContext = applicationContext;
+        this.walletClientConfiguration = walletClientConfiguration;
     }
 
     //endregion
@@ -45,8 +53,19 @@ public class RunnerComponent implements CommandLineRunner {
     //region PUBLIC METHODS
 
     /**
+     * Simple method to print the memory status.
+     */
+    public void printMemoryStatus() {
+        LOGGER.debug(String.format("Memory Status | Free: %d MB, Total: %d MB, Max: %d MB",
+                (runtime.freeMemory() / 1024) / 1024,
+                (runtime.totalMemory() / 1024) / 1024,
+                (runtime.maxMemory() / 1024) / 1024));
+
+        lastMemPrint = Instant.now().getEpochSecond();
+    }
+
+    /**
      * Entry point for the client app, this method receives the parameters and starts the user simulation.
-     *
      * @param args Parameters send by the user when running the app.
      */
     @Override
@@ -60,61 +79,59 @@ public class RunnerComponent implements CommandLineRunner {
             threadsPerUser = Integer.parseInt(args[1]);
             roundsPerThread = Integer.parseInt(args[2]);
 
+            // Set the parameters at application's configuration level, necessary for User beans creation.
+            this.walletClientConfiguration.setThreadsPerUser(threadsPerUser);
+            this.walletClientConfiguration.setRoundsPerThread(roundsPerThread);
+
             LOGGER.info("Users: " + users + " | " + "Threads: " + threadsPerUser + " | " + "Rounds: " + roundsPerThread);
         }
 
-        if (this.testingGrpc) {
-            String user = "sergio";
-
-            String result = this.walletService.deposit(user, 100, "USD");
-
-            LOGGER.info("Recieved: " + result);
-
-
-            result = this.walletService.withdraw(user, 200, "USD");
-
-            LOGGER.info("Recieved: " + result);
-
-
-            Map<String, Long> map = this.walletService.getBalance(user);
-
-            LOGGER.info("Recieved: Map size " + map.size());
-        }
-
         // Only run the simulation if amount higher than 0, otherwise newFixedThreadPool throws exception.
-        if (users <= 0) {
-            LOGGER.info("Simulation can only be run if users is higher than 0.");
+        if (users <= 0 || users > 250) {
+            if (users >= 250) {
+                LOGGER.error("Current known limitation, with more than 250 users the gRPC client will start "
+                        + "throwing errors like \"UNAVAILABLE: Channel shutdown invoked\" "
+                        + "please test with 250 users or less.");
+            } else {
+                LOGGER.error("Simulation can only be run if users is higher than 0.");
+            }
             return;
         }
 
-        // Define and execute some sort of user simulation.
+        // Start the simulation of users.
         List<User> simulatedUsers = new ArrayList<>();
 
+        // Use the application context for creating User beans.
         for (int i = 0; i < users; i++) {
-            User user = new User(i+1, threadsPerUser, roundsPerThread);
+            User user = applicationContext.getBean(User.class);
             simulatedUsers.add(user);
         }
 
+        // Start in parallel the execution of all the user's tasks.
         simulatedUsers.parallelStream().forEach(user -> user.executeTasks());
 
-        LOGGER.info("WORK STARTED");
+        LOGGER.info("Client simulation started.");
 
+        // Simple validation to wait for users to complete all tasks.
         boolean workFinished = false;
         try {
+            printMemoryStatus();
             while (!workFinished) {
-                LOGGER.info("WAITING for 1 second while users finish work.");
+                //LOGGER.info("WAITING - 50 ms");
                 workFinished = simulatedUsers.parallelStream().allMatch(user -> !user.isRunningTasks());
-                if (!workFinished) TimeUnit.SECONDS.sleep(1);
+                if (!workFinished) TimeUnit.MILLISECONDS.sleep(50);
+                if (Instant.now().getEpochSecond() - lastMemPrint >= 5) printMemoryStatus();
             }
         } catch (InterruptedException e) {
-            LOGGER.info("Simulation failed | " + e.getMessage());
+            LOGGER.error("Simulation failed | " + e.getMessage());
         }
 
-        LOGGER.info("WORK FINISHED");
+        LOGGER.info("Client simulation finished.");
 
+        // Start in parallel the shutdown of all the user's executors.
         simulatedUsers.parallelStream().forEach(user -> user.shutdownUser());
 
-        LOGGER.info("PROGRAM GOT TO END");
+        LOGGER.info("Client application finished shutdown of all executors.");
     }
 
     //endregion

@@ -14,6 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
 
+/**
+ * Main service component in charge of performing all the methods for deposit or withdrawal of funds
+ * and retrieving the balance for all currencies per user.
+ * Makes use of transaction and balance repositories.
+ */
 @Service
 public class TransactionService {
 
@@ -78,7 +83,7 @@ public class TransactionService {
      * @param amount It will be deposit or withdraw type depending on the isDeposit parameter.
      * @param currency
      * @param isDeposit if called to execute a deposit or a withdraw.
-     * @return
+     * @return Response message, empty if successful or error message otherwise.
      */
     private String executeTransaction(String userId, long amount, String currency, boolean isDeposit) {
         // First check the currency is a valid one.
@@ -127,19 +132,58 @@ public class TransactionService {
 
     //region PUBLIC METHODS
 
+    /**
+     * Entry method for performing deposits to the user's wallet, it's a transactional method
+     * to help avoid other transactions read or write incorrect information.
+     * @param userId
+     * @param amount
+     * @param currency
+     * @return Response message, empty if successful or error message otherwise.
+     */
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public String doDeposit(String userId, long amount, String currency) {
+        String threadName = Thread.currentThread().getName();
+        LOGGER.debug(threadName + " | " + "user-" + userId + " | " + "doDeposit.");
+
         // Let's execute the transaction and return the result.
-        return executeTransaction(userId, amount, currency, true);
+        String result = executeTransaction(userId, amount, currency, true);
+
+        LOGGER.debug(threadName + " | " + "user-" + userId + " | " + "doDeposit finished.");
+        return result;
     }
 
+    /**
+     * Entry method for performing withdrawal from the user's wallet, it's a transactional method
+     * to help avoid other transactions read or write incorrect information.
+     * @param userId
+     * @param amount
+     * @param currency
+     * @return Response message, empty if successful or error message otherwise.
+     */
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public String doWithdraw(String userId, long amount, String currency) {
+        String threadName = Thread.currentThread().getName();
+        LOGGER.debug(threadName + " | " + "user-" + userId + " | " + "doWithdraw.");
+
         // Let's execute the transaction and return the result.
-        return executeTransaction(userId, amount, currency, false);
+        String result = executeTransaction(userId, amount, currency, false);
+
+        LOGGER.debug(threadName + " | " + "user-" + userId + " | " + "doWithdraw finished.");
+        return result;
     }
 
+    /**
+     * Entry method for performing the get balance for a specific user's wallet, marked as
+     * Transactional Read Committed to avoid reading dirty data and respond with the latest
+     * available data to the client.
+     * @param userId
+     * @return Map with the balance for each currency for the specific user, empty map if error.
+     */
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Map<String, Long> getBalance(String userId) {
+        String threadName = Thread.currentThread().getName();
+        LOGGER.debug(threadName + " | " + "user-" + userId + " | " + "getBalance.");
+
         // Some transaction functionality based on the type.
         Map<String, Long> balances = new HashMap<>();
 
@@ -147,6 +191,7 @@ public class TransactionService {
 
         balanceList.forEach(balance -> balances.putIfAbsent(balance.getCurrency(), balance.getBalance()));
 
+        LOGGER.debug(threadName + " | " + "user-" + userId + " | " + "getBalance finished.");
         // Empty response equals to successful transaction.
         return balances;
     }
