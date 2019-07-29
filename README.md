@@ -1,9 +1,9 @@
 Wallet-Project - SergioNGCR
 ========================================
 
-Wallet-Project contains a java gRPC library project, the Wallet-Server project an app with 
-gRPC endpoints for Users to deposit, withdraw and check their wallet balances and the 
-Wallet-Client project an app that simulates Users making requests to the server.
+Wallet-Project contains a java gRPC library project, the Wallet-Server project an app 
+with gRPC endpoints for Users to deposit, withdraw and check their wallet balances and 
+the Wallet-Client project an app that simulates Users making requests to the server.
 
 Requirements
 ========================================
@@ -16,6 +16,9 @@ Adminer for DB administration, ports 33306 and 9898 should be available for thes
 programs to run properly.
 
 Port 59090 should be available as it is needed for the Wallet-Server application.
+
+No proxy settings are taken into account, please do all necessary changes if you use
+a proxy for your internet connection.
 
 How to Run
 ========================================
@@ -48,17 +51,29 @@ How to Run
 1. Still on the project root folder.
 2. Run `java -jar wallet-server/build/libs/wallet-server-0.0.1-SNAPSHOT.jar`
 3. Server should start and when ready it should be listening on port 59090.
+    ```
+    If everything is good you should see a log message like:
+    - gRPC Server started, listening on address: *, port: 59090
+
+    You might get this error if port not available:
+    - java.net.BindException: Address already in use
+    ```
 
 ### Run Wallet-Client:
 
 1. Open a new Terminal and navigate to the project's root folder.
-2. Run the following command, replace `<users>` with the amount of users to simulate, `<threadPerUser>` with the number 
-of threads allowed per user and `<roundsPerThread>` with the number of rounds each thread has to execute. 
+2. Run the following command, replace `<users>` with the amount of users to simulate, 
+`<threadPerUser>` with the number of threads allowed per user and `<roundsPerThread>` 
+with the number of rounds each thread has to execute. 
     ```
     java -jar wallet-client/build/libs/wallet-client-0.0.1-SNAPSHOT.jar <users> <threadPerUser> <roundsPerThread>
     ```
-3. Client application should start and simulate multiple users making requests to the Wallet-Server.
-4. If you want to hide all the debug messages just run the same command with an additional option:
+3. Client application should start and simulate multiple users making requests to 
+the Wallet-Server, debug messages will indicate the start and finish of the simulation
+and will show users making the requests.
+4. If you want to hide all the debug messages just run the same command with an 
+additional option as shown below, this could be useful when simulating more than 20 
+Users and you only need the start and finish times or don't care for User's output:
     ```
     java -jar wallet-client/build/libs/wallet-client-0.0.1-SNAPSHOT.jar <users> <threadPerUser> <roundsPerThread> --logging.level.com=INFO
     ```
@@ -77,6 +92,6 @@ done and the results.
 
 My final estimations are based on the results from that file, the Wallet-Server is able 
 to process around 76 requests per second under heavy loads, this makes it likely
-capable of serving up to 6.6 million requests in 24 hours, meaning that if an average of 6.6 
-requests per User is taken into account (based on the Rounds from the Wallet-Client app)
-the Wallet-Server could serve up to 1 million users daily.
+capable of serving up to 6.6 million requests in 24 hours, meaning that if an average of
+6.6 requests per User is taken into account (based on the Rounds from the Wallet-Client 
+app) the Wallet-Server could serve up to 1 million users daily.
