@@ -1,0 +1,4 @@
+spring:
+  # Configuration for the database connection when running as docker container.
+  datasource:
+    url: jdbc:mysql://db:3306/wallet

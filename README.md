@@ -27,18 +27,22 @@ How to Run
 
 1. Clone the repository to machine.
 2. Open a Terminal and navigate to the project's root folder.
-3. Execute docker-compose to download and start the MySQL instance. (use -d for detached)
+3. Execute docker network command to create a network for wallet-project containers.
+    ```
+    docker network create wallet-project-sergio
+    ```
+4. Execute docker-compose to download and start the MySQL instance. (use -d for detached)
     ```
     docker-compose up -d
     ```
-4. If running detached, check docker ps for when MySQL is up and running.
-5. You can additionally login to Adminer on http://localhost:9898.
+5. If running detached, check docker ps for when MySQL is up and running.
+6. You can additionally login to Adminer on http://localhost:9898.
    ```
    Username: root
    Password: test
    database: wallet
    ```
-6. Once you can login to the database, you can proceed.
+7. Once you can login to the database, you can proceed.
 
 ### Building projects:
 
@@ -49,8 +53,15 @@ How to Run
 ### Run Wallet-Server:
 
 1. Still on the project root folder.
-2. Run `java -jar wallet-server/build/libs/wallet-server-0.0.1-SNAPSHOT.jar`
-3. Server should start and when ready it should be listening on port 59090.
+2. Run `./gradlew :wallet-server:docker` to build the docker image named 
+'wallet-server-sergio'
+3. To start the 'wallet-server-sergio' container run:
+    ```
+    docker run --rm -p 59090:59090 --network wallet-project-sergio --name wallet-server-sergio wallet-server-sergio
+    ```
+    3.2. If you want to run 'wallet-server-sergio' locally run: 
+    `java -jar wallet-server/build/libs/wallet-server-1.0.jar`
+4. Server should start and when ready it should be listening on port 59090.
     ```
     If everything is good you should see a log message like:
     - gRPC Server started, listening on address: *, port: 59090
@@ -58,24 +69,36 @@ How to Run
     You might get this error if port not available:
     - java.net.BindException: Address already in use
     ```
+5. To exit the server just press Ctrl+C or ^C.
 
 ### Run Wallet-Client:
 
 1. Open a new Terminal and navigate to the project's root folder.
-2. Run the following command, replace `<users>` with the amount of users to simulate, 
+2. Run `./gradlew :wallet-client:docker`  to build the docker image named 
+'wallet-client-sergio'
+3. Run the following command, replace `<users>` with the amount of users to simulate, 
 `<threadPerUser>` with the number of threads allowed per user and `<roundsPerThread>` 
-with the number of rounds each thread has to execute. 
+with the number of rounds each thread has to execute.
     ```
-    java -jar wallet-client/build/libs/wallet-client-0.0.1-SNAPSHOT.jar <users> <threadPerUser> <roundsPerThread>
+    docker run --rm --network wallet-project-sergio wallet-client-sergio <users> <threadPerUser> <roundsPerThread>
+    ``` 
+    3.2. If you want to run 'wallet-client-sergio' locally run:
     ```
-3. Client application should start and simulate multiple users making requests to 
+    java -jar wallet-client/build/libs/wallet-client-1.0.jar <users> <threadPerUser> <roundsPerThread>
+    ```
+4. Client application should start and simulate multiple users making requests to 
 the Wallet-Server, debug messages will indicate the start and finish of the simulation
-and will show users making the requests.
-4. If you want to hide all the debug messages just run the same command with an 
+and will show users making the requests, when simulation finishes the application will 
+exit.
+5. If you want to hide all the debug messages just run the same commands with an 
 additional option as shown below, this could be useful when simulating more than 20 
 Users and you only need the start and finish times or don't care for User's output:
     ```
-    java -jar wallet-client/build/libs/wallet-client-0.0.1-SNAPSHOT.jar <users> <threadPerUser> <roundsPerThread> --logging.level.com=INFO
+    docker run --rm --network wallet-project-sergio wallet-client-sergio <users> <threadPerUser> <roundsPerThread> --logging.level.com=INFO
+    
+    or
+   
+    java -jar wallet-client/build/libs/wallet-client-1.0.jar <users> <threadPerUser> <roundsPerThread> --logging.level.com=INFO
     ```
 
 Important Project Choices

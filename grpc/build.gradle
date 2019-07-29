@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'com.sergio.grpc'
-version = '0.0.1-SNAPSHOT'
+version = '1.0'
 
 dependencies {
     implementation "io.grpc:grpc-netty-shaded:${grpcVersion}"

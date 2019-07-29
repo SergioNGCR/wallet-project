@@ -24,3 +24,8 @@ services:
       - db
     ports:
       - 9898:8080
+
+networks:
+  default:
+    external:
+      name: wallet-project-sergio

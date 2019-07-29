@@ -1,0 +1,5 @@
+
+grpc:
+  client:
+    local-grpc-server:
+      address: 'static://wallet-server-sergio:59090'

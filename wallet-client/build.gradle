@@ -1,11 +1,18 @@
 plugins {
+    id 'com.palantir.docker' version '0.20.0'
     id 'org.springframework.boot' version '2.1.6.RELEASE'
 }
 
 apply plugin: 'io.spring.dependency-management'
 
 group = 'com.sergio.wallet.client'
-version = '0.0.1-SNAPSHOT'
+version = '1.0'
+
+docker {
+    name 'wallet-client-sergio'
+    files bootJar.outputs
+    copySpec.into("build/libs")
+}
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
