@@ -120,7 +120,7 @@ repository implementations.
 * For the Wallet-Client simulation the following design is the base idea of how
 the simulation should execute:
 
-[[https://github.com/SergioNGCR/wallet-project/blob/master/wallet-client-diagram.png|alt=wallet-client-diagram]]
+![wallet-client-diagram}(wallet-client-diagram.png)
 
 Performance Estimations
 ========================================
