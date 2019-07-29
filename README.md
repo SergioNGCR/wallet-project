@@ -117,8 +117,9 @@ to use JUnit 5 but fund many issues and couldn't get tests to run properly,
 had to rollback to JUnit 4.
 * Usage of Hibernate with spring-boot-starter-data-jpa for DB connection and 
 repository implementations.
-* For the Wallet-Client simulation the following design is the base idea of how
-the simulation should execute:
+* For the Wallet-Client simulation the following design is the base idea on how
+the simulation should execute, important to note as my interpretation of the 
+test task definition might be different than expected:
 
 ![wallet-client-diagram](wallet-client-diagram.png)
 
