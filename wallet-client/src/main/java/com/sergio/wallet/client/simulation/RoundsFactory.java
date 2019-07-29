@@ -1,12 +1,8 @@
 package com.sergio.wallet.client.simulation;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Simple factory like class in charge of providing callable tasks to make requests to the wallet-server.
@@ -18,6 +14,8 @@ public abstract class RoundsFactory {
     /**
      * Method used to create a round using the roundToBuild parameter to choose from Rounds A, B and C.
      * User id and its logger are used to properly link the tasks to the user who owns it.
+     *
+     * This method should be refactored into multiple smaller methods per Round - not enough time.
      * @param roundToBuild
      * @param user
      * @return A Callable task that will perform a set of grpc requests to the wallet-server.
@@ -25,6 +23,10 @@ public abstract class RoundsFactory {
     private static Callable<Boolean> instantiateRound(int roundToBuild, final User user) {
         Callable<Boolean> callable;
         final String userIdString = String.valueOf(user.getId());
+        final String usd = "USD";
+        final String eur = "EUR";
+        final String gbp = "GBP";
+
 
         switch (roundToBuild) {
             case 0:
@@ -36,25 +38,46 @@ public abstract class RoundsFactory {
                     try {
                         user.logDebug("User: " + userIdString + " | " + threadName + " | " + roundName + " starting.");
 
-                        String result = user.getWalletClient().deposit(userIdString, 100, "USD");
+                        String result = user.getWalletClient().deposit(userIdString, 100, usd);
 
                         user.logDebug("User: " + userIdString + " | " + threadName + " | " + roundName
-                                + " deposit result: " + result);
+                                + " Deposit " + 100 + " " + usd + " result: " + result);
+
+                        result = user.getWalletClient().withdraw(userIdString, 200, usd);
+
+                        user.logDebug("User: " + userIdString + " | " + threadName + " | " + roundName
+                                + " Withdraw " + 200 + " " + usd + " result: " + result);
+
+                        result = user.getWalletClient().deposit(userIdString, 100, eur);
+
+                        user.logDebug("User: " + userIdString + " | " + threadName + " | " + roundName
+                                + " Deposit " + 100 + " " + eur + " result: " + result);
 
                         Map<String, Long> map = user.getWalletClient().getBalance(userIdString);
 
                         user.logDebug("User: " + userIdString + " | " + threadName + " | " + roundName
-                                + " balance USD: " + map.get("USD").intValue());
+                                + " balance - "
+                                + (map.containsKey(usd) ? usd + " : " + map.get(usd).intValue() + " - " : " - ")
+                                + (map.containsKey(eur) ? eur + " : " + map.get(eur).intValue() + " - " : " - ")
+                                + (map.containsKey(gbp) ? gbp + " : " + map.get(gbp).intValue() : ""));
 
-                        result = user.getWalletClient().withdraw(userIdString, 200, "USD");
+                        result = user.getWalletClient().withdraw(userIdString, 100, usd);
 
                         user.logDebug("User: " + userIdString + " | " + threadName + " | " + roundName
-                                + " withdraw result: " + result);
+                                + " Withdraw " + 100 + " " + usd + " result: " + result);
 
                         map = user.getWalletClient().getBalance(userIdString);
 
                         user.logDebug("User: " + userIdString + " | " + threadName + " | " + roundName
-                                + " balance USD: " + map.get("USD").intValue());
+                                + " balance - "
+                                + (map.containsKey(usd) ? usd + " : " + map.get(usd).intValue() + " - " : " - ")
+                                + (map.containsKey(eur) ? eur + " : " + map.get(eur).intValue() + " - " : " - ")
+                                + (map.containsKey(gbp) ? gbp + " : " + map.get(gbp).intValue() : ""));
+
+                        result = user.getWalletClient().withdraw(userIdString, 100, usd);
+
+                        user.logDebug("User: " + userIdString + " | " + threadName + " | " + roundName
+                                + " Withdraw " + 100 + " " + usd + " result: " + result);
 
                         user.logDebug("User: " + userIdString + " | " + threadName + " | " + roundName + " finished.");
 
@@ -69,25 +92,113 @@ public abstract class RoundsFactory {
             case 1:
                 // Round B.
                 callable = () -> {
-                    TimeUnit.SECONDS.sleep(1);
                     String roundName = "Round B";
-                    String name = Thread.currentThread().getName();
-                    user.logInfo("User: " + userIdString + " | " + name + " | " + roundName + " Starting work.");
-                    TimeUnit.SECONDS.sleep(2);
-                    user.logInfo("User: " + userIdString + " | " + name + " | " + roundName  + " Work finished.");
-                    return true;
+                    String threadName = Thread.currentThread().getName();
+
+                    try {
+                        user.logDebug("User: " + userIdString + " | " + threadName + " | " + roundName + " starting.");
+
+                        String result = user.getWalletClient().withdraw(userIdString, 100, gbp);
+
+                        user.logDebug("User: " + userIdString + " | " + threadName + " | " + roundName
+                                + " Withdraw " + 100 + " " + gbp + " result: " + result);
+
+                        result = user.getWalletClient().deposit(userIdString, 300, "GPB");
+
+                        user.logDebug("User: " + userIdString + " | " + threadName + " | " + roundName
+                                + " Deposit " + 300 + " " + "GPB" + " result: " + result);
+
+                        result = user.getWalletClient().withdraw(userIdString, 100, gbp);
+
+                        user.logDebug("User: " + userIdString + " | " + threadName + " | " + roundName
+                                + " Withdraw " + 100 + " " + gbp + " result: " + result);
+
+                        result = user.getWalletClient().withdraw(userIdString, 100, gbp);
+
+                        user.logDebug("User: " + userIdString + " | " + threadName + " | " + roundName
+                                + " Withdraw " + 100 + " " + gbp + " result: " + result);
+
+                        result = user.getWalletClient().withdraw(userIdString, 100, gbp);
+
+                        user.logDebug("User: " + userIdString + " | " + threadName + " | " + roundName
+                                + " Withdraw " + 100 + " " + gbp + " result: " + result);
+
+                        user.logDebug("User: " + userIdString + " | " + threadName + " | " + roundName + " finished.");
+
+                        return true;
+                    } catch (Exception e) {
+                        user.logError("User: " + userIdString + " | " + threadName + " | " + roundName + " An exception was thrown: "
+                                + e.getMessage() + " | " + e.getStackTrace()[0].toString());
+                        return false;
+                    }
                 };
                 break;
             case 2:
                 // Round C.
                 callable = () -> {
-                    TimeUnit.SECONDS.sleep(1);
                     String roundName = "Round C";
-                    String name = Thread.currentThread().getName();
-                    user.logInfo("User: " + userIdString + " | " + name + " | " + roundName + " Starting work.");
-                    TimeUnit.SECONDS.sleep(2);
-                    user.logInfo("User: " + userIdString + " | " + name + " | " + roundName  + " Work finished.");
-                    return true;
+                    String threadName = Thread.currentThread().getName();
+
+                    try {
+                        user.logDebug("User: " + userIdString + " | " + threadName + " | " + roundName + " starting.");
+
+                        Map<String, Long> map = user.getWalletClient().getBalance(userIdString);
+
+                        user.logDebug("User: " + userIdString + " | " + threadName + " | " + roundName
+                                + " balance - "
+                                + (map.containsKey(usd) ? usd + " : " + map.get(usd).intValue() + " - " : " - ")
+                                + (map.containsKey(eur) ? eur + " : " + map.get(eur).intValue() + " - " : " - ")
+                                + (map.containsKey(gbp) ? gbp + " : " + map.get(gbp).intValue() : ""));
+
+                        String result = user.getWalletClient().deposit(userIdString, 100, usd);
+
+                        user.logDebug("User: " + userIdString + " | " + threadName + " | " + roundName
+                                + " Deposit " + 100 + " " + usd + " result: " + result);
+
+                        result = user.getWalletClient().deposit(userIdString, 100, usd);
+
+                        user.logDebug("User: " + userIdString + " | " + threadName + " | " + roundName
+                                + " Deposit " + 100 + " " + usd + " result: " + result);
+
+                        result = user.getWalletClient().withdraw(userIdString, 100, usd);
+
+                        user.logDebug("User: " + userIdString + " | " + threadName + " | " + roundName
+                                + " Withdraw " + 100 + " " + usd + " result: " + result);
+
+                        result = user.getWalletClient().deposit(userIdString, 100, usd);
+
+                        user.logDebug("User: " + userIdString + " | " + threadName + " | " + roundName
+                                + " Deposit " + 100 + " " + usd + " result: " + result);
+
+                        map = user.getWalletClient().getBalance(userIdString);
+
+                        user.logDebug("User: " + userIdString + " | " + threadName + " | " + roundName
+                                + " balance - "
+                                + (map.containsKey(usd) ? usd + " : " + map.get(usd).intValue() + " - " : " - ")
+                                + (map.containsKey(eur) ? eur + " : " + map.get(eur).intValue() + " - " : " - ")
+                                + (map.containsKey(gbp) ? gbp + " : " + map.get(gbp).intValue() : ""));
+
+                        result = user.getWalletClient().withdraw(userIdString, 200, usd);
+
+                        user.logDebug("User: " + userIdString + " | " + threadName + " | " + roundName
+                                + " Withdraw " + 200 + " " + usd + " result: " + result);
+
+                        map = user.getWalletClient().getBalance(userIdString);
+
+                        user.logDebug("User: " + userIdString + " | " + threadName + " | " + roundName
+                                + " balance - "
+                                + (map.containsKey(usd) ? usd + " : " + map.get(usd).intValue() + " - " : " - ")
+                                + (map.containsKey(eur) ? eur + " : " + map.get(eur).intValue() + " - " : " - ")
+                                + (map.containsKey(gbp) ? gbp + " : " + map.get(gbp).intValue() : ""));
+
+                        user.logDebug("User: " + userIdString + " | " + threadName + " | " + roundName + " finished.");
+
+                        return true;
+                    } catch (Exception e) {
+                        user.logError("User: " + userIdString + " | " + threadName + " | " + roundName + " An exception was thrown: "
+                                + e.getMessage() + " | " + e.getStackTrace()[0].toString());
+                        return false;
+                    }
                 };
                 break;
             default:
@@ -119,8 +230,7 @@ public abstract class RoundsFactory {
         List<Callable<Boolean>> tmpRounds = new ArrayList<>();
 
         for (int i = 0; i < amount; i++) {
-            //tmpRounds.add(instantiateRound(randomNumber(), user));
-            tmpRounds.add(instantiateRound(0, user));
+            tmpRounds.add(instantiateRound(randomNumber(), user));
         }
 
         return Collections.unmodifiableList(tmpRounds);

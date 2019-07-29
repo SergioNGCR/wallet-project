@@ -46,7 +46,7 @@ Req/sec : 20.41
 Args 1 4 3
 
 Client - start: 13:40:01.118 : Client simulation started.
-Client - end  : 13:40:02.280 : Client application finished ...
+Client - end  : 13:40:02.280 : Client simulation finished.
 Total : 1.162 
 
 * : 13:41:48.715
@@ -78,7 +78,7 @@ Req/sec : 26.31
 Args 1 8 3
 
 Client - start: 14:20:50.762 : Client simulation started.
-Client - end  : 14:20:52.324 : Client application finished ...
+Client - end  : 14:20:52.324 : Client simulation finished.
 Total : 1.562
 
 * : 14:22:24.307
@@ -118,7 +118,7 @@ Req/sec : 25.64
 Args 2 4 3
 
 Client - start: 14:38:02.709 : Client simulation started.
-Client - end  : 14:38:05.285 : Client application finished ...
+Client - end  : 14:38:05.285 : Client simulation finished.
 Total : 2.576
 
 * : 14:44:12.005
@@ -134,7 +134,7 @@ Req/sec : 32.26
 Args 2 8 3
 
 Client - start: 14:46:23.773 : Client simulation started.
-Client - end  : 14:46:27.335 : Client application finished ...
+Client - end  : 14:46:27.335 : Client simulation finished.
 Total : 3.562
 
 * : 14:49:55.486
@@ -150,7 +150,7 @@ Req/sec : 45.45
 Args 10 4 3
 
 Client - start: 15:04:08.848 : Client simulation started.
-Client - end  : 15:04:15.939 : Client application finished ...
+Client - end  : 15:04:15.939 : Client simulation finished.
 Total : 7.091
 
 * : 15:05:58.195
@@ -166,7 +166,7 @@ Req/sec : 55.55
 Args 20 8 3
 
 Client - start: 15:12:17.867 : Client simulation started.
-Client - end  : 15:12:37.752 : Client application finished ...
+Client - end  : 15:12:37.752 : Client simulation finished.
 Total : 19.885
 
 * : 15:15:16.367
@@ -182,7 +182,7 @@ Req/sec : 66.66
 Args 100 8 3
 
 Client - start: 15:25:45.740 : Client simulation started.
-Client - end  : 15:27:23.806 : Client application finished ...
+Client - end  : 15:27:23.806 : Client simulation finished.
 Total : 98.07
 
 * : 15:34:13.807
@@ -198,7 +198,7 @@ Req/sec : 71.43
 Args 200 8 3
 
 Client - start: 15:46:04.353 : Client simulation started.
-Client - end  : 15:49:16.105 : Client application finished ...
+Client - end  : 15:49:16.105 : Client simulation finished.
 Total : 191.75
 
 * : 15:51:22.414
@@ -214,7 +214,7 @@ Req/sec : 71.43
 Args 250 8 3
 
 Client - start: 17:38:06.918 : Client simulation started.
-Client - end  : 17:41:56.404 : Client application finished ...
+Client - end  : 17:41:56.404 : Client simulation finished.
 Total : 229.79
 
 * : 18:04:47.902
