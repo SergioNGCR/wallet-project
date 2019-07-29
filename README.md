@@ -117,6 +117,10 @@ to use JUnit 5 but fund many issues and couldn't get tests to run properly,
 had to rollback to JUnit 4.
 * Usage of Hibernate with spring-boot-starter-data-jpa for DB connection and 
 repository implementations.
+* For the Wallet-Client simulation the following design is the base idea of how
+the simulation should execute:
+
+[[https://github.com/SergioNGCR/wallet-project/blob/master/wallet-client-diagram.png|alt=wallet-client-diagram]]
 
 Performance Estimations
 ========================================
