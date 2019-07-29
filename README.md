@@ -8,7 +8,8 @@ the Wallet-Client project an app that simulates Users making requests to the ser
 Requirements
 ========================================
 
-Java should be installed on the machine, at least java 1.8.0_212.
+Java should be installed on the machine, at least java 1.8.0_212, if running the 
+applications on local machine.
 
 For the project to work on your machine you need Docker installed and running, as the 
 project makes use of docker-compose for downloading and running the MySQL server and 
@@ -104,7 +105,18 @@ Users and you only need the start and finish times or don't care for User's outp
 Important Project Choices
 ========================================
 
-...
+* Docker usage for Database, Client and Server applications, helping streamlining
+deployment on any machine or environment.
+* Client and Server applications are based on Spring Boot 2, simplifying the
+initial project setup and avoiding much boiler-plate code.
+* Decided to use [grpc-spring-boot-starter](https://github.com/yidongnan/grpc-spring-boot-starter) 
+for handling the gRPC Server and Client implementations, seemed to have more 
+development and features than other available options. 
+* JUnit 4 is used for unit tests with hamcrest library for assertions, tried 
+to use JUnit 5 but fund many issues and couldn't get tests to run properly, 
+had to rollback to JUnit 4.
+* Usage of Hibernate with spring-boot-starter-data-jpa for DB connection and 
+repository implementations.
 
 Performance Estimations
 ========================================
