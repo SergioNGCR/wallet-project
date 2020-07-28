@@ -1,4 +1,4 @@
-Wallet-Project - SergioNGCR
+Wallet-Project
 ========================================
 
 Wallet-Project contains a java gRPC library project, the Wallet-Server project an app 
@@ -26,7 +26,7 @@ How to Run
 
 ### Basic setup and running DB:
 
-1. Clone the repository to machine.
+1. Clone the repository.
 2. Open a Terminal and navigate to the project's root folder.
 3. Execute docker network command to create a network for wallet-project containers.
     ```
